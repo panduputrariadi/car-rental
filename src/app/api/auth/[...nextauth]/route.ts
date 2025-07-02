@@ -63,7 +63,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         return {
           ...token,
-          access_token: user.access_token,
+          // access_token: user.access_token,
           token_type: user.token_type,
           expires_in: Date.now() + user.expires_in * 1000, // Convert to milliseconds
           user: user.user,
