@@ -8,9 +8,22 @@ export default withAuth({
     signIn: "/login",
   },
   callbacks: {
-    authorized({ token }) {
-      console.log("TOKEN", token);
-      return !!token; // Hanya allow jika ada token
+    authorized({ token, req }) {
+      // Jika tidak ada token sama sekali, redirect ke login
+      if (!token) {
+        console.log("No token found, redirecting to login");
+        return false;
+      }
+
+      // Periksa apakah token sudah expired
+      const now = Math.floor(Date.now() / 1000); // Waktu sekarang dalam detik
+      if (token.exp && token.exp < now) {
+        console.log("Token expired, redirecting to login");
+        return false;
+      }
+
+      // Jika token valid
+      return true;
     },
   },
 });

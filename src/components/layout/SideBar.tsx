@@ -55,6 +55,7 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { signOut } from "next-auth/react";
 
 // Menu items.
 const items = [
@@ -359,7 +360,7 @@ const SideBar = () => {
                   <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/login' })}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>

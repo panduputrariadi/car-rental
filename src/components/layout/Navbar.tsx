@@ -14,11 +14,12 @@ import {
 import { Button } from "../ui/button";
 import { useTheme } from "next-themes";
 import { SidebarTrigger } from "../ui/sidebar";
+import { signOut } from "next-auth/react";
 
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
   return (
-    <nav className="p-4 flex items-center justify-between">
+    <nav className="p-4 flex items-center justify-between sticky top-0 z-50 bg-background">
       {/* LEFT SIDE */}
       <SidebarTrigger />
       {/* RIGHT SIDE */}
@@ -65,10 +66,11 @@ const Navbar = () => {
               <Settings className="h-[1.2rem] w-[1.2rem] mr-2" />
               Setting
             </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive">
+            <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/login' })}>
               <LogOut className="h-[1.2rem] w-[1.2rem] mr-2" />
               Logout
             </DropdownMenuItem>
+
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
