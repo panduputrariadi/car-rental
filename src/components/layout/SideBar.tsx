@@ -1,3 +1,4 @@
+"use client";
 import {
   Award,
   BarChart2,
@@ -11,13 +12,10 @@ import {
   CreditCard,
   DollarSign,
   FileText,
-  Home,
-  Inbox,
   List,
   LogOut,
   MapPin,
   Plus,
-  Search,
   Settings,
   Tags,
   User,
@@ -57,34 +55,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { signOut } from "next-auth/react";
 
-// Menu items.
-const items = [
-  {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-];
 
 const SideBar = () => {
   return (
@@ -147,7 +117,7 @@ const SideBar = () => {
                       <SidebarMenu>
                         <SidebarMenuItem>
                           <SidebarMenuButton asChild>
-                            <Link href="/vehicles/all" className="pl-6">
+                            <Link href="dashboard/vehicles/all" className="pl-6">
                               <List className="w-3 h-3" />
                               <span>All Vehicles</span>
                             </Link>
@@ -337,7 +307,7 @@ const SideBar = () => {
                 <SidebarMenuButton>
                   <div className="flex items-center gap-2">
                     <Avatar className="h-6 w-6">
-                      <AvatarImage src="/avatars/admin.png" />
+                      <AvatarImage src="/vite.svg" />
                       <AvatarFallback>AD</AvatarFallback>
                     </Avatar>
                     <span>Admin User</span>

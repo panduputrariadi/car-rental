@@ -10,6 +10,7 @@ type Props = {
 
 const layout = async (props: Props) => {
   const session = await getServerSession(authOptions);
+  console.log(session);
   return (
     <div className="flex w-full">
       <SideBar />
