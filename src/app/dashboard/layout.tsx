@@ -1,6 +1,5 @@
-import { getServerSession } from "next-auth";
-import Link from "next/link";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+// import { getServerSession } from "next-auth";
+// import { authOptions } from "../api/auth/[...nextauth]/route";
 import SideBar from '../../components/layout/SideBar';
 import Navbar from '../../components/layout/Navbar';
 
@@ -9,8 +8,8 @@ type Props = {
 };
 
 const layout = async (props: Props) => {
-  const session = await getServerSession(authOptions);
-  console.log(session);
+  // const session = await getServerSession(authOptions);
+  // console.log(session);
   return (
     <div className="flex w-full">
       <SideBar />

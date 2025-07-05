@@ -53,10 +53,12 @@ import {
   CollapsibleTrigger,
 } from "../ui/collapsible";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 
 const SideBar = () => {
+  const {data : session} = useSession()
+  // console.log(session);
   return (
     <Sidebar collapsible="icon" variant="floating">
       {/* Header with logo and app name */}
@@ -310,7 +312,7 @@ const SideBar = () => {
                       <AvatarImage src="/vite.svg" />
                       <AvatarFallback>AD</AvatarFallback>
                     </Avatar>
-                    <span>Admin User</span>
+                    <span>{session?.user?.name}</span>
                   </div>
                   <ChevronUp className="ml-auto h-4 w-4" />
                 </SidebarMenuButton>

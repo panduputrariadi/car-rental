@@ -18,6 +18,8 @@ import { signOut } from "next-auth/react";
 
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
+  // const {data : session} = useSession()
+  // console.log(session);
   return (
     <nav className="p-4 flex items-center justify-between sticky top-0 z-50 bg-background">
       {/* LEFT SIDE */}
