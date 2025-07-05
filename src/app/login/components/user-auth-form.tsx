@@ -4,8 +4,6 @@ import { HTMLAttributes, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-// import { Link } from '@tanstack/react-router'
-// import Link from 'next/link'
 import { IconBrandFacebook, IconBrandGithub } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,8 +19,8 @@ import { Input } from "@/components/ui/input";
 import PasswordInput from "../../../components/password-input";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import Image from "next/image";
 import { Loader2Icon } from "lucide-react";
+import { toast } from "sonner";
 
 type UserAuthFormProps = HTMLAttributes<HTMLFormElement>;
 
@@ -65,18 +63,17 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   // }
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    setError("");
-
     const res = await signIn("credentials", {
       email: data.email,
       password: data.password,
-      redirect: false, // supaya kita bisa handle sendiri
+      redirect: false,
     });
 
     if (res?.ok) {
-      router.push("/dashboard"); // redirect ke halaman utama
+      toast.success("Login berhasil!");
+      router.push("/dashboard");
     } else {
-      setError("Invalid credentials");
+      toast.error("Login gagal. Email atau password salah.");
     }
 
     setIsLoading(false);
@@ -121,10 +118,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             </FormItem>
           )}
         />
-        <Button className="mt-2">          
+        <Button className="mt-2">
           {isLoading && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}
           Login
-        </Button>        
+        </Button>
 
         <div className="relative my-2">
           <div className="absolute inset-0 flex items-center">

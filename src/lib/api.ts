@@ -1,19 +1,30 @@
 import axios from "axios";
 import { Backend_URL } from "./Constants";
 import { getSession } from "next-auth/react";
+import { toast } from "sonner";
 
-const API_BASE_URL = Backend_URL;
 
-
-export const fetchVehicles = async () => {
-  const session = await getSession();  
-  const response = await axios.get(`${API_BASE_URL}/get-all-cars`, {
+export const fetchVehicles = async (page = 1) => {
+  const session = await getSession();
+  try {
+    const response = await axios.get(`${Backend_URL}/get-all-cars?page=${page}`, {
       headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${session?.access_token}`,
-      }
-  });
-  console.log(response);
-  return response.data.data;
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+    });
+
+    const { success, message } = response.data;
+
+    if (success) {
+      toast.success(message || "Cars loaded successfully");
+    } else {
+      toast.error(message || "Failed to load cars");
+    }
+
+    return response.data.data;
+
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Network error");
+    throw error;
+  }
 };

@@ -1,7 +1,16 @@
 export type Payment = {
   id: string
-  amount: number
-  status: "pending" | "processing" | "success" | "failed"
-  email: string
-  name: string
+  brand: string
+  model: string
+  year: number
+  status: string
+  price: number
+  color: string
+  type: string
+  description: string
+  plateNumber: string
+  images: {
+    carId: string
+    imagePath: string
+  }[]
 }

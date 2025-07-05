@@ -5,6 +5,8 @@ import Providers from "../components/Provide";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
+import { Toaster } from "sonner";
+// import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +46,7 @@ export default async function RootLayout({
               {children}
             </SidebarProvider>
           </Providers>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
