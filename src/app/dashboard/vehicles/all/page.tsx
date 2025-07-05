@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchVehicles } from "@/lib/api";
-import { columns } from "./columns";
+import { columns } from "./components/columns";
 import {
   useReactTable,
   getCoreRowModel,
@@ -16,17 +16,44 @@ import {
 } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+// import { toast } from "sonner";
+import TableSkeleton from "./components/TableSkeleton";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import CreateCarDialog from "./components/CreateCarDialog";
 
-export default function VehiclesPage() {  
+export default function VehiclesPage() {
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
-  const [rowSelection, setRowSelection] = useState({});  
+  const [rowSelection, setRowSelection] = useState({});
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["vehicles", page],
@@ -35,7 +62,12 @@ export default function VehiclesPage() {
   });
 
   const vehicles = data?.items || [];
-  const meta = data?.meta || { current_page: 1, total_pages: 1, has_more_pages: false, total_items: 0 };
+  const meta = data?.meta || {
+    current_page: 1,
+    total_pages: 1,
+    has_more_pages: false,
+    total_items: 0,
+  };
 
   const table = useReactTable({
     data: vehicles,
@@ -68,8 +100,14 @@ export default function VehiclesPage() {
   //   });
   // };
 
-  if (isLoading) return <div className="p-4 text-center">Loading...</div>;
-  if (isError) return <div className="p-4 text-center text-red-500">Failed to load data.</div>;
+  if (isLoading) {
+    return <TableSkeleton />;
+  }
+  if (isError) {
+    toast.error("Failed to load data", {
+      description: "Please try again later",
+    });
+  }
 
   return (
     <div className="w-full p-4 space-y-4">
@@ -77,9 +115,13 @@ export default function VehiclesPage() {
         <Input
           placeholder="Filter brand..."
           value={(table.getColumn("brand")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn("brand")?.setFilterValue(event.target.value)}
+          onChange={(event) =>
+            table.getColumn("brand")?.setFilterValue(event.target.value)
+          }
           className="max-w-sm"
         />
+
+        <CreateCarDialog />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -88,16 +130,19 @@ export default function VehiclesPage() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {table.getAllColumns().filter(col => col.getCanHide()).map((column) => (
-              <DropdownMenuCheckboxItem
-                key={column.id}
-                checked={column.getIsVisible()}
-                onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                className="capitalize"
-              >
-                {column.id}
-              </DropdownMenuCheckboxItem>
-            ))}
+            {table
+              .getAllColumns()
+              .filter((col) => col.getCanHide())
+              .map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                  className="capitalize"
+                >
+                  {column.id}
+                </DropdownMenuCheckboxItem>
+              ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -109,7 +154,12 @@ export default function VehiclesPage() {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
-                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -118,17 +168,26 @@ export default function VehiclesPage() {
           <TableBody>
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   No results.
                 </TableCell>
               </TableRow>
@@ -139,7 +198,8 @@ export default function VehiclesPage() {
 
       <div className="flex items-center justify-between text-sm text-muted-foreground py-2">
         <div>
-          Page {meta.current_page} of {meta.total_pages} — Total: {meta.total_items} items
+          Page {meta.current_page} of {meta.total_pages} — Total:{" "}
+          {meta.total_items} items
         </div>
         <div className="space-x-2">
           <Button
@@ -153,7 +213,9 @@ export default function VehiclesPage() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPage((prev) => (meta.has_more_pages ? prev + 1 : prev))}
+            onClick={() =>
+              setPage((prev) => (meta.has_more_pages ? prev + 1 : prev))
+            }
             disabled={!meta.has_more_pages}
           >
             Next
