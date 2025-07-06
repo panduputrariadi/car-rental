@@ -40,8 +40,7 @@ const formSchema = z.object({
 });
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);  
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -70,10 +69,14 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     });
 
     if (res?.ok) {
-      toast.success("Login berhasil!");
+      toast.success("Login berhasil!", {
+        closeButton: true,
+      });
       router.push("/dashboard");
     } else {
-      toast.error("Login gagal. Email atau password salah.");
+      toast.error("Login gagal. Email atau password salah.", {
+        closeButton: true,        
+      });
     }
 
     setIsLoading(false);

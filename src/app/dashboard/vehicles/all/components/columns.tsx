@@ -13,6 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 
 export const columns: ColumnDef<Payment>[] = [
   {
@@ -36,11 +37,14 @@ export const columns: ColumnDef<Payment>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
-  },  
+  },
   {
-    accessorKey: "brand",  // kecil, sesuai data API
+    accessorKey: "brand", // kecil, sesuai data API
     header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         Brand
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
@@ -50,7 +54,10 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "model",
     header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         Model
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
@@ -60,12 +67,49 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("status")}</div>,
+    cell: ({ row }) => {
+      const status = row.getValue("status") as
+        | "AVAILABLE"
+        | "RENTED"
+        | "RESERVED"
+        | "DAMAGED"
+        | "UNAVAILABLE"
+        | "UNDER_MAINTENANCE";
+
+      // Mapping status ke class dan teks yang sesuai
+      const getStatusClass = (status: string) => {
+        switch (status) {
+          case "AVAILABLE":
+            return "bg-green-primary";
+          case "RENTED":
+            return "bg-yellow-primary";
+          case "RESERVED":
+            return "bg-purple-primary";
+          case "DAMAGED":
+            return "bg-red-primary";
+          case "UNAVAILABLE":
+            return "bg-gray-primary";
+          case "UNDER_MAINTENANCE":
+            return "bg-amber-primary";
+          default:
+            return "bg-gray-500 text-white";
+        }
+      };
+
+      return (
+        <Badge className={getStatusClass(status)}>
+          {status.charAt(0) + status.slice(1).toLowerCase().replace(/_/g, " ")}
+        </Badge>
+      );
+    },
   },
   {
     accessorKey: "color",
     header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         Color
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
@@ -75,7 +119,10 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         Type
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
@@ -85,12 +132,17 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "plateNumber",
     header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
         Plate Number
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div className="lowercase">{row.getValue("plateNumber")}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue("plateNumber")}</div>
+    ),
   },
   {
     accessorKey: "price",
@@ -104,6 +156,30 @@ export const columns: ColumnDef<Payment>[] = [
       return <div className="text-right font-medium">{formatted}</div>;
     },
   },
+  // {
+  //   accessorKey: "images",
+  //   header: "Images",
+  //   cell: ({ row }) => {
+  //     const images = row.getValue("images") as Array<{
+  //       carId: string;
+  //       imagePath: string;
+  //     }>;
+
+  //     return (
+  //       <div className="flex gap-2">
+  //         {images.map((image, index) => (
+  //           <div key={index} className="relative h-10 w-10">
+  //             <img
+  //               src={image.imagePath}
+  //               alt={`Car image ${index + 1}`}
+  //               className="h-full w-full rounded-full object-cover"
+  //             />
+  //           </div>
+  //         ))}
+  //       </div>
+  //     );
+  //   },
+  // },
   {
     id: "actions",
     enableHiding: false,
@@ -132,4 +208,3 @@ export const columns: ColumnDef<Payment>[] = [
     },
   },
 ];
-

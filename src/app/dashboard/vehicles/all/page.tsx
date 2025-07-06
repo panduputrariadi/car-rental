@@ -34,18 +34,6 @@ import { ChevronDown } from "lucide-react";
 // import { toast } from "sonner";
 import TableSkeleton from "./components/TableSkeleton";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { DialogTitle } from "@radix-ui/react-dialog";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import CreateCarDialog from "./components/CreateCarDialog";
 
 export default function VehiclesPage() {

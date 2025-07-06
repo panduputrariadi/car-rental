@@ -9,8 +9,12 @@ export type Payment = {
   type: string
   description: string
   plateNumber: string
-  images: {
+  // images: {
+  //   carId: string
+  //   imagePath: string
+  // }[]
+  images: [{
     carId: string
     imagePath: string
-  }[]
+  }]
 }
