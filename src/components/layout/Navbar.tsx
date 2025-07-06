@@ -1,6 +1,5 @@
 "use client";
 import { LogOut, Moon, Settings, Sun, User } from "lucide-react";
-import Link from "next/link";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
@@ -19,7 +18,7 @@ import { signOut } from "next-auth/react";
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
   // const {data : session} = useSession()
-  // console.log(session);
+  console.log(theme);
   return (
     <nav className="p-4 flex items-center justify-between sticky top-0 z-50 bg-background">
       {/* LEFT SIDE */}

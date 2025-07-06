@@ -8,7 +8,7 @@ export default withAuth({
     signIn: "/login",
   },
   callbacks: {
-    authorized({ token, req }) {
+    authorized({ token }) {
       // Jika tidak ada token sama sekali, redirect ke login
       if (!token) {
         console.log("No token found, redirecting to login");
