@@ -14,10 +14,10 @@ RUN npm install
 COPY . .
 
 # Build Next.js app
-# RUN npm run build
+RUN npm run build
 
 # Jalankan Next.js app
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "dev"]
 
 # Expose port Next.js (default: 3000)
 EXPOSE 3000

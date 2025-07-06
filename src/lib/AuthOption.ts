@@ -1,7 +1,8 @@
 import { Backend_URL } from "@/lib/Constants";
 import CredentialsProvider from "next-auth/providers/credentials";
 import type { JWT } from "next-auth/jwt";
-// import { NextAuthOptions } from "next-auth";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import { NextAuthOptions } from "next-auth";
 
 async function refreshToken(token: JWT): Promise<JWT> {
@@ -66,7 +67,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: JWT; user?: JWT }) {
       if (user) {
         return {
           ...token,
@@ -82,7 +83,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
 
-    async session({ session, token }) {
+    async session({ session, token }: { session: JWT; token: JWT }) {
       session.user = token.user;
       session.access_token = token.access_token;
       session.token_type = token.token_type;

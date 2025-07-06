@@ -101,7 +101,7 @@ export default function VehiclesPage() {
     <div className="w-full p-4 space-y-4">
       <div className="flex items-center gap-4">
         <Input
-          placeholder="Filter brand..."
+          placeholder="Filter car..."
           value={(table.getColumn("brand")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("brand")?.setFilterValue(event.target.value)

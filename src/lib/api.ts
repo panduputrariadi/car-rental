@@ -6,7 +6,7 @@ import { CreateCarInput } from "./schema/vehicle";
 
 
 export const fetchVehicles = async (page = 1) => {
-  const session = await getSession();
+  const session = await getSession() as any;
   try {
     const response = await axios.get(`${Backend_URL}/get-all-cars?page=${page}`, {
       headers: {
@@ -24,14 +24,14 @@ export const fetchVehicles = async (page = 1) => {
 
     return response.data.data;
 
-  } catch (error) {
+  } catch (error: any) {
     toast.error(error.response?.data?.message || "Network error");
     throw error;
   }
 };
 
 export async function createVehicle(data: CreateCarInput) {
-  const session = await getSession();
+  const session = await getSession() as any;
   const formData = new FormData();
 
   Object.entries(data).forEach(([key, value]) => {

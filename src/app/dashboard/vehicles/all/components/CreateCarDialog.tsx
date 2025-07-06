@@ -47,7 +47,7 @@ export default function CreateCarDialog() {
       queryClient.invalidateQueries({ queryKey: ["vehicles"] });
       form.reset();
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast.error(error.message || "Failed to create car");
     },
   });
@@ -55,7 +55,7 @@ export default function CreateCarDialog() {
   const onSubmit = async (data: CreateCarInput) => {
     mutate(data);
   }
-  const onInvalid = (errors: any) => {
+  const onInvalid = (errors: { [s: string]: unknown; } | ArrayLike<unknown>) => {
     const firstError = Object.values(errors)[0] as { message?: string };
     toast.error(firstError?.message || "Please fill all required fields");
   };
