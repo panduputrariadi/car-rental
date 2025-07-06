@@ -46,7 +46,7 @@ export default function VehiclesPage() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["vehicles", page],
     queryFn: () => fetchVehicles(page),
-    keepPreviousData: true,
+    // keepPreviousData: true,
   });
 
   const vehicles = data?.items || [];

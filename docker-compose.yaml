@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      # - NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=oIt4T7UhtWITfOwH7p/27+Tk3MShgDngukLVHRDp5xM=
+    volumes:
+      - .:/app
+      - /app/node_modules

@@ -40,7 +40,7 @@ export default function CreateCarDialog() {
     },
   });
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: createVehicle,
     onSuccess: () => {
       toast.success("Car created successfully");
@@ -128,8 +128,8 @@ export default function CreateCarDialog() {
             <DialogClose asChild>
               <Button type="button" variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Saving..." : "Create Car"}
+            <Button type="submit">
+              Create Car              
             </Button>
           </DialogFooter>
         </form>
