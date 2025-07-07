@@ -1,4 +1,4 @@
-import { Backend_URL } from "@/lib/Constants";
+// import { Backend_URL } from "@/lib/Constants";
 import CredentialsProvider from "next-auth/providers/credentials";
 import type { JWT } from "next-auth/jwt";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -7,7 +7,7 @@ import { NextAuthOptions } from "next-auth";
 
 async function refreshToken(token: JWT): Promise<JWT> {
   try {
-    const res = await fetch(`${Backend_URL}/refresh`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/refresh`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token.access_token}`,
@@ -41,7 +41,7 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const res = await fetch(`${Backend_URL}/login`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

@@ -5,10 +5,13 @@ services:
     build: .
     ports:
       - "3000:3000"
+    container_name: car-rental
     environment:
       # - NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
       - NEXTAUTH_URL=http://localhost:3000
       - NEXTAUTH_SECRET=oIt4T7UhtWITfOwH7p/27+Tk3MShgDngukLVHRDp5xM=
+      # - NEXT_PUBLIC_BACKEND_URL=http://0.0.0.0:8000/api/auth
+      - NEXT_PUBLIC_BACKEND_URL=http://host.docker.internal:8000/api/auth
     volumes:
       - .:/app
       - /app/node_modules

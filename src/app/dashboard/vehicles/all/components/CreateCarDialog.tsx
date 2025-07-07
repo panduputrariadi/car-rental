@@ -102,7 +102,7 @@ export default function CreateCarDialog() {
               <Label>Type</Label>
               <Input {...form.register("type")} />
             </div>
-          </div>
+          </div>          
 
           <div className="grid gap-2">
             <Label>Plate Number</Label>
