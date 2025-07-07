@@ -21,6 +21,9 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { registerSchema } from "@/lib/schema/auth";
+import { set } from "date-fns";
 
 type UserAuthFormProps = HTMLAttributes<HTMLFormElement>;
 
@@ -40,7 +43,8 @@ const formSchema = z.object({
 });
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = useState(false);  
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("account");
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -48,6 +52,16 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     defaultValues: {
       email: "",
       password: "",
+    },
+  });
+
+  const registerForm = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      password_confirmation: "",
     },
   });
 
@@ -75,77 +89,188 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       router.push("/dashboard");
     } else {
       toast.error("Login gagal. Email atau password salah.", {
-        closeButton: true,        
+        closeButton: true,
       });
     }
 
     setIsLoading(false);
   }
 
+  async function onSubmitRegister(data: z.infer<typeof registerSchema>) {
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/register`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        }        
+      );
+
+      if (response.ok) {
+        toast.success("Registrasi berhasil!", {
+          closeButton: true,
+        });
+        // router.push("/login");        
+        setActiveTab("account");
+        registerForm.reset();
+        setIsLoading(false);
+      } else {
+        setActiveTab("register");
+        // const errorData = await response.json();        
+        toast.error('Email atau password sudah digunakan', {
+          closeButton: true,
+        });
+        setIsLoading(false);
+      }
+    } catch (error: any) {
+      setActiveTab("register");
+      setIsLoading(false);
+      toast.error(error.message, {
+        closeButton: true,
+      });
+    }
+  }
+
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className={cn("grid gap-3", className)}
-        {...props}
-      >
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="name@example.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem className="relative">
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <PasswordInput placeholder="********" {...field} />
-              </FormControl>
-              <FormMessage />
-              {/* <Link
-                href='/forgot-password'
-                className='text-muted-foreground absolute -top-0.5 right-0 text-sm font-medium hover:opacity-75'
-              >
-                Forgot password?
-              </Link> */}
-            </FormItem>
-          )}
-        />
-        <Button className="mt-2">
-          {isLoading && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}
-          Login
-        </Button>
+    <div className=" w-full max-w-sm flex-col">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="account">Account</TabsTrigger>
+          <TabsTrigger value="register">Register</TabsTrigger>
+        </TabsList>
+        <TabsContent value="account">
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className={cn("grid gap-3", className)}
+              {...props}
+            >              
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="name@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem className="relative">
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <PasswordInput placeholder="********" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button className="mt-2">
+                {isLoading && (
+                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Login
+              </Button>
 
-        <div className="relative my-2">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background text-muted-foreground px-2">
-              Or continue with
-            </span>
-          </div>
-        </div>
+              <div className="relative my-2">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background text-muted-foreground px-2">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          <Button variant="outline" type="button" disabled={isLoading}>
-            <IconBrandGithub className="h-4 w-4" /> GitHub
-          </Button>
-          <Button variant="outline" type="button" disabled={isLoading}>
-            <IconBrandFacebook className="h-4 w-4" /> Facebook
-          </Button>
-        </div>
-      </form>
-    </Form>
+              <div className="grid grid-cols-2 gap-2">
+                <Button variant="outline" type="button" disabled={isLoading}>
+                  <IconBrandGithub className="h-4 w-4" /> GitHub
+                </Button>
+                <Button variant="outline" type="button" disabled={isLoading}>
+                  <IconBrandFacebook className="h-4 w-4" /> Facebook
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </TabsContent>
+        <TabsContent value="register">
+          <Form {...registerForm}>
+            <form
+              onSubmit={registerForm.handleSubmit(onSubmitRegister)}
+              className={cn("grid gap-3", className)}
+              {...props}
+            >
+              <FormField
+                control={registerForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="John Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={registerForm.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="name@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={registerForm.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <PasswordInput placeholder="********" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={registerForm.control}
+                name="password_confirmation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl>
+                      <PasswordInput placeholder="********" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button className="mt-2" disabled={isLoading}>
+                {isLoading && (
+                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Register
+              </Button>
+            </form>
+          </Form>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }
