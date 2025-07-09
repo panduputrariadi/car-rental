@@ -18,3 +18,10 @@ export type Payment = {
     imagePath: string
   }]
 }
+
+export type Categories = {
+  id: string
+  name: string
+  slug: string
+  descpription: string
+}

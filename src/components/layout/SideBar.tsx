@@ -135,7 +135,7 @@ const SideBar = () => {
                         </SidebarMenuItem>
                         <SidebarMenuItem>
                           <SidebarMenuButton asChild>
-                            <Link href="/vehicles/categories" className="pl-6">
+                            <Link href="dashboard/categories" className="pl-6">
                               <Tags className="w-3 h-3" />
                               <span>Categories</span>
                             </Link>

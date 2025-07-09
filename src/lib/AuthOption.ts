@@ -6,15 +6,27 @@ import type { JWT } from "next-auth/jwt";
 import { NextAuthOptions } from "next-auth";
 
 async function refreshToken(token: JWT): Promise<JWT> {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/refresh`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token.access_token}`,
-      },
-    });
+  console.log("Token sebelum refresh:", token.access_token);
+  console.log("🌐 Refresh URL:", `${process.env.NEXT_PUBLIC_BACKEND_URL}/refresh`);
 
-    if (!res.ok) throw new Error("Failed to refresh token");
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/refresh`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token.access_token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("📨 Response refresh:", res.status);
+
+    if(!res.ok){
+      throw new Error( "Failed to refresh token" );
+    } 
 
     const refreshedData = await res.json();
 
@@ -25,7 +37,8 @@ async function refreshToken(token: JWT): Promise<JWT> {
       expires_in: Date.now() + refreshedData.expires_in * 1000,
       user: refreshedData.user,
     };
-  } catch {
+  } catch (error) {
+    console.error("❌ Gagal refresh token:", error);
     return { ...token };
   }
 }
@@ -41,14 +54,17 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: credentials.email,
-            password: credentials.password,
-          }),
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/login`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
+          }
+        );
 
         if (!res.ok) return null;
 
@@ -67,7 +83,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: JWT }) {
+    async jwt({ token, user }: { token: JWT; user: JWT | undefined }) {
       if (user) {
         return {
           ...token,
@@ -79,7 +95,15 @@ export const authOptions: NextAuthOptions = {
       }
 
       const isExpired = Date.now() > (token.expires_in ?? 0);
-      if (isExpired) return await refreshToken(token);
+      console.log("⏳ Token Expired?", isExpired);
+
+      if (isExpired) {
+        const refreshedToken = await refreshToken(token);
+        console.log("🔐 Token expired, refresh token", refreshedToken);
+        return refreshedToken;
+      }
+
+      console.log("🔐 Token masih valid, pakai token lama");
       return token;
     },
 
@@ -91,6 +115,7 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+
   pages: {
     signIn: "/login",
   },

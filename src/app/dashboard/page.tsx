@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { TrendingUp } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const chartData = [
   { month: "January", desktop: 186, mobile: 80 },
@@ -37,7 +38,14 @@ const chartConfig = {
     color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
+const months = ["All", "January", "February", "March", "April", "May", "June"];
 const DashboardPage = () => {
+  const [selectedMonth, setSelectedMonth] = useState<string>("All");
+
+  const filteredData =
+    selectedMonth === "All"
+      ? chartData
+      : chartData.filter((item) => item.month === selectedMonth);
   return (
     <div className="grid grid-cols-1 gap-4 p-4 lg:grid-cols-3 2xl:grid-cols-4">
       <Card className="lg:col-span-1">
@@ -72,12 +80,28 @@ const DashboardPage = () => {
 
       <Card className="lg:col-span-2 h-100 overflow-y-scroll">
         <CardHeader>
-          <CardTitle>Bar Chart - Multiple</CardTitle>
+          <div className="flex justify-between">
+            <div>
+              <CardTitle>Bar Chart - Multiple</CardTitle>  
+            </div>
+            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+              <SelectTrigger className="w-[150px]">
+                <SelectValue placeholder="Select month" />
+              </SelectTrigger>
+              <SelectContent>
+                {months.map((month) => (
+                  <SelectItem key={month} value={month}>
+                    {month}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <CardDescription>January - June 2024</CardDescription>
         </CardHeader>
         <CardContent>
           <ChartContainer config={chartConfig}>
-            <BarChart accessibilityLayer data={chartData}>
+            <BarChart accessibilityLayer data={filteredData}>
               <CartesianGrid vertical={false} />
               <XAxis
                 dataKey="month"
@@ -90,7 +114,9 @@ const DashboardPage = () => {
                 cursor={false}
                 content={<ChartTooltipContent indicator="dashed" />}
               />
-              <ChartLegend content={<ChartLegendContent  payload={chartData}/>} />
+              <ChartLegend
+                content={<ChartLegendContent payload={filteredData} />}
+              />
 
               <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
               <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />

@@ -23,7 +23,6 @@ import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { registerSchema } from "@/lib/schema/auth";
-import { set } from "date-fns";
 
 type UserAuthFormProps = HTMLAttributes<HTMLFormElement>;
 

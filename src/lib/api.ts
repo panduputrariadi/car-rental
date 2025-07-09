@@ -30,6 +30,31 @@ export const fetchVehicles = async (page = 1) => {
   }
 };
 
+export const fetchCategories = async (page = 1) => {
+  const session = await getSession() as any;
+  try {
+    const response = await axios.get(`${Backend_URL}/get-all-categories?page=${page}`, {
+      headers: {
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+    });
+
+    const { success, message } = response.data;
+
+    if (success) {
+      toast.success(message || "Cars loaded successfully");
+    } else {
+      toast.error(message || "Failed to load cars");
+    }
+
+    return response.data.data;
+
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || "Network error");
+    throw error;
+  }
+};
+
 export async function createVehicle(data: CreateCarInput) {
   const session = await getSession() as any;
   const formData = new FormData();
