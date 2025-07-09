@@ -33,13 +33,15 @@ import {
 } from "@/components/ui/table";
 import TableSkeleton from "./TableSkeleton";
 import { columns } from "./columns";
+import CreateCategoryDialgo from "./CreateCategoryDialgo";
+import { softDeleteCategory } from "@/lib/api";
 
 const CategoriesTable = () => {
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
-  const [rowSelection, setRowSelection] = useState({});
+  const [rowSelection, setRowSelection] = useState({});  
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["categories", page],
@@ -47,17 +49,26 @@ const CategoriesTable = () => {
     // keepPreviousData: true,
   });
 
-  const categories = data?.items || [];
-  const meta = data?.meta || {
-    current_page: 1,
-    total_pages: 1,
-    has_more_pages: false,
-    total_items: 0,
+  const categories = data?.items || [];  
+  const meta = {
+    current_page: data?.meta?.current_page || 1,
+    total_pages: data?.meta?.last_page || 1,
+    total_items: data?.meta?.total || 0,
+    has_more_pages: data?.meta?.current_page < data?.meta?.last_page,
   };
+  const handleDelete = async (id: string) => {
+  try {
+    await softDeleteCategory(id);
+    toast.success("Category deleted successfully");
+  } catch (error) {
+    console.log(error);
+    toast.error("Failed to delete category");
+  }
+}
 
   const table = useReactTable({
     data: categories,
-    columns,
+    columns: columns(handleDelete),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
@@ -74,7 +85,7 @@ const CategoriesTable = () => {
       rowSelection,
       pagination: {
         pageIndex: page - 1,
-        pageSize: 0,
+        pageSize: 10,
       },
     },
   });
@@ -97,6 +108,8 @@ const CategoriesTable = () => {
           }
           className="max-w-sm"
         />
+
+        <CreateCategoryDialgo />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -161,9 +174,11 @@ const CategoriesTable = () => {
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center"                  
                 >
-                  No results.
+                  <div className="w-full">
+                    No results.
+                  </div>
                 </TableCell>
               </TableRow>
             )}

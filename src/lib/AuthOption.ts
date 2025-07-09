@@ -4,15 +4,13 @@ import type { JWT } from "next-auth/jwt";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import { NextAuthOptions } from "next-auth";
+import { Backend_URL } from "./Constants";
 
 async function refreshToken(token: JWT): Promise<JWT> {
-  console.log("Token sebelum refresh:", token.access_token);
-  console.log("🌐 Refresh URL:", `${process.env.NEXT_PUBLIC_BACKEND_URL}/refresh`);
-
-
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/refresh`,
+      // `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/refresh`,
+      `${Backend_URL}/refresh`,
       {
         method: "POST",
         headers: {
@@ -20,9 +18,7 @@ async function refreshToken(token: JWT): Promise<JWT> {
           "Content-Type": "application/json",
         },
       }
-    );
-
-    console.log("📨 Response refresh:", res.status);
+    );    
 
     if(!res.ok){
       throw new Error( "Failed to refresh token" );
@@ -95,15 +91,15 @@ export const authOptions: NextAuthOptions = {
       }
 
       const isExpired = Date.now() > (token.expires_in ?? 0);
-      console.log("⏳ Token Expired?", isExpired);
+      // console.log("⏳ Token Expired?", isExpired);
 
       if (isExpired) {
         const refreshedToken = await refreshToken(token);
-        console.log("🔐 Token expired, refresh token", refreshedToken);
+        // console.log("🔐 Token expired, refresh token", refreshedToken);
         return refreshedToken;
       }
 
-      console.log("🔐 Token masih valid, pakai token lama");
+      // console.log("🔐 Token masih valid, pakai token lama");
       return token;
     },
 

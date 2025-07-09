@@ -14,7 +14,9 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
-export const columns: ColumnDef<Categories>[] = [
+export const columns = (
+  handleDelete: (id: string) => void
+): ColumnDef<Categories>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -38,7 +40,7 @@ export const columns: ColumnDef<Categories>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name", // kecil, sesuai data API
+    accessorKey: "name",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -74,13 +76,15 @@ export const columns: ColumnDef<Categories>[] = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div className="lowercase">{row.getValue("description")}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue("description")}</div>
+    ),
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original;
+      const category = row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -92,12 +96,14 @@ export const columns: ColumnDef<Categories>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.name)}
+              onClick={() => navigator.clipboard.writeText(category.name)}
             >
               Copy Brand
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View details</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDelete(category.id)}>
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

@@ -23,5 +23,5 @@ export type Categories = {
   id: string
   name: string
   slug: string
-  descpription: string
+  description: string
 }
