@@ -140,3 +140,32 @@ export async function softDeleteCategory(id: string) {
     throw error;
   }
 }
+
+export async function getSoftDeletedCategories(page = 1) {
+  try {
+    const session = (await getSession()) as any;
+    const response = await axios.get(`${Backend_URL}/get-soft-deleted-categories?page=${page}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+    });
+
+    const { success, message } = response.data;
+
+    if (success) {
+      toast.success(message || "Cars loaded successfully");
+    } else {
+      toast.error(message || "Failed to load cars");
+    }
+    return {
+      items: response.data.data.items,
+      meta: response.data.data.meta,
+    };
+
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || "Network error");
+    throw error;
+  }
+}

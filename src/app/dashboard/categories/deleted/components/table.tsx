@@ -1,5 +1,5 @@
 "use client";
-import { fetchCategories } from "@/lib/api";
+import { getSoftDeletedCategories } from "@/lib/api";
 import {
   ColumnFilter,
   flexRender,
@@ -33,10 +33,9 @@ import {
 } from "@/components/ui/table";
 import TableSkeleton from "./TableSkeleton";
 import { columns } from "./columns";
-import CreateCategoryDialgo from "./CreateCategoryDialgo";
 import { softDeleteCategory } from "@/lib/api";
 
-const CategoriesTable = () => {
+const CategoriesSoftDeletedTable = () => {
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
@@ -44,8 +43,8 @@ const CategoriesTable = () => {
   const [rowSelection, setRowSelection] = useState({});  
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["categories", page],
-    queryFn: () => fetchCategories(page),
+    queryKey: ["deleted", page],
+    queryFn: () => getSoftDeletedCategories(page),
     // keepPreviousData: true,
   });
 
@@ -56,6 +55,7 @@ const CategoriesTable = () => {
     total_items: data?.meta?.total || 0,
     has_more_pages: data?.meta?.current_page < data?.meta?.last_page,
   };
+  // console.log(JSON.stringify(data.items, null, 2));
   const handleDelete = async (id: string) => {
   try {
     await softDeleteCategory(id);
@@ -108,9 +108,7 @@ const CategoriesTable = () => {
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
-        />
-
-        <CreateCategoryDialgo />
+        />        
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -236,4 +234,4 @@ const CategoriesTable = () => {
   );
 };
 
-export default CategoriesTable;
+export default CategoriesSoftDeletedTable;

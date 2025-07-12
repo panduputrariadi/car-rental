@@ -18,6 +18,7 @@ import {
   Plus,
   Settings,
   Tags,
+  Trash,
   User,
   UserCog,
   Users,
@@ -35,6 +36,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import Image from "next/image";
@@ -55,9 +58,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { signOut, useSession } from "next-auth/react";
 
-
 const SideBar = () => {
-  const {data : session} = useSession()
+  const { data: session } = useSession();
   // console.log(session);
   return (
     <Sidebar collapsible="icon" variant="floating">
@@ -104,7 +106,7 @@ const SideBar = () => {
           <SidebarGroupLabel>Fleet Management</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>                
+              <SidebarMenuItem>
                 <Collapsible defaultOpen className="group/collapsible">
                   <SidebarGroup>
                     <SidebarGroupLabel asChild>
@@ -116,32 +118,78 @@ const SideBar = () => {
                     </SidebarGroupLabel>
                     <CollapsibleContent>
                       {/* <SidebarGroupContent /> */}
-                      <SidebarMenu>
-                        <SidebarMenuItem>
+                      <SidebarMenuSub>
+                        <SidebarMenuSubItem>
                           <SidebarMenuButton asChild>
-                            <Link href="dashboard/vehicles/all" className="pl-6">
+                            <Link href="/dashboard/vehicles/all" className="">
                               <List className="w-3 h-3" />
                               <span>All Vehicles</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuSubItem>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuButton asChild>
+                            <Link href="/vehicles/add">
+                              <Plus className="w-3 h-3" />
+                              <span>Add New Vehicle</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuSubItem>
+                      </SidebarMenuSub>
+                    </CollapsibleContent>
+                  </SidebarGroup>
+                </Collapsible>
+
+                <Collapsible defaultOpen className="group/collapsible">
+                  <SidebarGroup>
+                    <SidebarGroupLabel asChild>
+                      <CollapsibleTrigger>
+                        <Tags className="w-4 h-4" />
+                        Categories
+                        <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                      </CollapsibleTrigger>
+                    </SidebarGroupLabel>
+                    <CollapsibleContent>
+                      {/* <SidebarGroupContent /> */}
+                      {/* <SidebarMenu>
+                        <SidebarMenuItem>
+                          <SidebarMenuButton asChild>
+                            <Link
+                              href="dashboard/vehicles/all"
+                              className="pl-6"
+                            >
+                              <List className="w-3 h-3" />
+                              <span>All Categories</span>
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
                           <SidebarMenuButton asChild>
                             <Link href="/vehicles/add" className="pl-6">
-                              <Plus className="w-3 h-3" />
-                              <span>Add New Vehicle</span>
+                              <Trash className="w-3 h-3" />
+                              <span>Deleted Categories</span>
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
-                        <SidebarMenuItem>
+                      </SidebarMenu> */}
+                      <SidebarMenuSub>
+                        <SidebarMenuSubItem>
                           <SidebarMenuButton asChild>
-                            <Link href="dashboard/categories" className="pl-6">
-                              <Tags className="w-3 h-3" />
-                              <span>Categories</span>
+                            <Link href="/dashboard/categories">
+                              <List className="w-3 h-3" />
+                              <span>All Categories</span>
                             </Link>
                           </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      </SidebarMenu>
+                        </SidebarMenuSubItem>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuButton asChild>
+                            <Link href="/dashboard/categories/deleted">
+                              <Trash className="w-3 h-3" />
+                              <span>Deleted Categories</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuSubItem>
+                      </SidebarMenuSub>
                     </CollapsibleContent>
                   </SidebarGroup>
                 </Collapsible>
@@ -332,7 +380,9 @@ const SideBar = () => {
                   <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/login' })}>
+                <DropdownMenuItem
+                  onClick={() => signOut({ callbackUrl: "/login" })}
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>

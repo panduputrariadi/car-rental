@@ -21,7 +21,8 @@ async function refreshToken(token: JWT): Promise<JWT> {
     );    
 
     if(!res.ok){
-      throw new Error( "Failed to refresh token" );
+      // throw new Error( "Failed to refresh token" );
+      console.log("❌ Gagal refresh token:", res.status);
     } 
 
     const refreshedData = await res.json();
@@ -98,8 +99,6 @@ export const authOptions: NextAuthOptions = {
         // console.log("🔐 Token expired, refresh token", refreshedToken);
         return refreshedToken;
       }
-
-      // console.log("🔐 Token masih valid, pakai token lama");
       return token;
     },
 
