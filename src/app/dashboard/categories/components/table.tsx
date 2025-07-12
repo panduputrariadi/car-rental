@@ -1,5 +1,4 @@
 "use client";
-import { fetchCategories } from "@/lib/api";
 import {
   ColumnFilter,
   flexRender,
@@ -34,22 +33,27 @@ import {
 import TableSkeleton from "./TableSkeleton";
 import { columns } from "./columns";
 import CreateCategoryDialgo from "./CreateCategoryDialgo";
-import { softDeleteCategory } from "@/lib/api";
+import {
+  fetchCategories,
+  softDeleteCategory,
+} from "@/lib/controllers/category";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const CategoriesTable = () => {
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
-  const [rowSelection, setRowSelection] = useState({});  
+  const [rowSelection, setRowSelection] = useState({});
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["categories", page],
-    queryFn: () => fetchCategories(page),
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ["categories", page, perPage],
+    queryFn: () => fetchCategories(page, perPage),
     // keepPreviousData: true,
   });
 
-  const categories = data?.items || [];  
+  const categories = data?.items || [];
   const meta = {
     current_page: data?.meta?.current_page || 1,
     total_pages: data?.meta?.last_page || 1,
@@ -57,14 +61,15 @@ const CategoriesTable = () => {
     has_more_pages: data?.meta?.current_page < data?.meta?.last_page,
   };
   const handleDelete = async (id: string) => {
-  try {
-    await softDeleteCategory(id);
-    toast.success("Category deleted successfully");
-  } catch (error) {
-    console.log(error);
-    toast.error("Failed to delete category");
-  }
-}
+    try {
+      await softDeleteCategory(id);
+      await refetch();
+      toast.success("Category deleted successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to delete category");
+    }
+  };
   const columnDefaults = columns(handleDelete);
 
   const table = useReactTable({
@@ -84,12 +89,31 @@ const CategoriesTable = () => {
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination: {
-        pageIndex: page - 1,
-        pageSize: 10,
-      },
+      // pagination: {
+      //   pageIndex: page - 1,
+      //   pageSize: 10,
+      // },
     },
   });
+
+  const generatePageNumbers = (current: number, total: number) => {
+    const pages = [];
+
+    if (total <= 5) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+
+    if (current <= 3) {
+      pages.push(1, 2, 3, "...", total);
+    } else if (current >= total - 2) {
+      pages.push(1, "...", total - 2, total - 1, total);
+    } else {
+      pages.push(1, "...", current, "...", total);
+    }
+
+    return pages;
+  };
+
   if (isLoading) {
     return <TableSkeleton />;
   }
@@ -109,6 +133,25 @@ const CategoriesTable = () => {
           }
           className="max-w-sm"
         />
+
+        <Select
+          value={String(perPage)}
+          onValueChange={(value) => {
+            setPerPage(Number(value));
+            setPage(1); // reset ke page 1 saat perPage berubah
+          }}
+        >
+          <SelectTrigger className="w-[120px]">
+            <SelectValue placeholder="Items per page" />
+          </SelectTrigger>
+          <SelectContent>
+            {[5, 10, 20, 50].map((value) => (
+              <SelectItem key={value} value={String(value)}>
+                {value} / page
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
         <CreateCategoryDialgo />
 
@@ -175,11 +218,9 @@ const CategoriesTable = () => {
               <TableRow>
                 <TableCell
                   colSpan={columnDefaults.length}
-                  className="h-24 text-center"                  
+                  className="h-24 text-center"
                 >
-                  <div className="w-full">
-                    No results.
-                  </div>
+                  <div className="w-full">No results.</div>
                 </TableCell>
               </TableRow>
             )}
@@ -204,7 +245,7 @@ const CategoriesTable = () => {
               Previous
             </Button>
 
-            {Array.from({ length: meta.total_pages }, (_, i) => i + 1).map(
+            {/* {Array.from({ length: meta.total_pages }, (_, i) => i + 1).map(
               (pageNumber) => (
                 <Button
                   key={pageNumber}
@@ -217,6 +258,25 @@ const CategoriesTable = () => {
                   {pageNumber}
                 </Button>
               )
+            )} */}
+            {generatePageNumbers(meta.current_page, meta.total_pages).map(
+              (pageNum, idx) =>
+                pageNum === "..." ? (
+                  <span key={idx} className="px-2 text-muted-foreground">
+                    ...
+                  </span>
+                ) : (
+                  <Button
+                    key={pageNum}
+                    variant={
+                      pageNum === meta.current_page ? "default" : "outline"
+                    }
+                    size="sm"
+                    onClick={() => setPage(Number(pageNum))}
+                  >
+                    {pageNum}
+                  </Button>
+                )
             )}
 
             <Button

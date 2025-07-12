@@ -4,18 +4,18 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Categories } from "@/types/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
+  DropdownMenuItem,  
 } from "@/components/ui/dropdown-menu";
+import { IconRestore } from "@tabler/icons-react";
 
 export const columns = (
-  handleDelete: (id: string) => void
+  handleForceDelete: (id: string) => void,
+  handleRestore: (id: string) => void
 ): ColumnDef<Categories>[] => [
   {
     id: "select",
@@ -94,15 +94,11 @@ export const columns = (
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(category.name)}
-            >
-              Copy Brand
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleDelete(category.id)}>
-              Delete
+            <DropdownMenuItem onClick={() => handleRestore(category.id)} variant="default">
+              <IconRestore />Restore
+            </DropdownMenuItem>                      
+            <DropdownMenuItem onClick={() => handleForceDelete(category.id)} variant="destructive">
+              <Trash />Force Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

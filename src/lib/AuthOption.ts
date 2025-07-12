@@ -23,6 +23,7 @@ async function refreshToken(token: JWT): Promise<JWT> {
     if(!res.ok){
       // throw new Error( "Failed to refresh token" );
       console.log("❌ Gagal refresh token:", res.status);
+      console.log(token)
     } 
 
     const refreshedData = await res.json();

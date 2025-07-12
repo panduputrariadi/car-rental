@@ -1,5 +1,4 @@
 "use client";
-import { getSoftDeletedCategories } from "@/lib/api";
 import {
   ColumnFilter,
   flexRender,
@@ -33,22 +32,26 @@ import {
 } from "@/components/ui/table";
 import TableSkeleton from "./TableSkeleton";
 import { columns } from "./columns";
-import { softDeleteCategory } from "@/lib/api";
+import {
+  forceDeleteCategory,
+  getSoftDeletedCategories,
+  restoreSoftDeletedCategory,  
+} from "@/lib/controllers/category";
 
 const CategoriesSoftDeletedTable = () => {
   const [page, setPage] = useState(1);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
-  const [rowSelection, setRowSelection] = useState({});  
+  const [rowSelection, setRowSelection] = useState({});
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["deleted", page],
     queryFn: () => getSoftDeletedCategories(page),
     // keepPreviousData: true,
   });
 
-  const categories = data?.items || [];  
+  const categories = data?.items || [];
   const meta = {
     current_page: data?.meta?.current_page || 1,
     total_pages: data?.meta?.last_page || 1,
@@ -56,16 +59,27 @@ const CategoriesSoftDeletedTable = () => {
     has_more_pages: data?.meta?.current_page < data?.meta?.last_page,
   };
   // console.log(JSON.stringify(data.items, null, 2));
-  const handleDelete = async (id: string) => {
-  try {
-    await softDeleteCategory(id);
-    toast.success("Category deleted successfully");
-  } catch (error) {
-    console.log(error);
-    toast.error("Failed to delete category");
-  }
-}
-  const columnDefaults = columns(handleDelete);
+  const handleForceDelete = async (id: string) => {
+    try {
+      await forceDeleteCategory(id);  
+      await refetch();    
+      toast.success("Category force deleted successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to delete category");
+    }
+  };
+  const handleRestore = async (id: string) => {
+    try {
+      await restoreSoftDeletedCategory(id);
+      await refetch();
+      toast.success("Category restored successfully");      
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to restore category");
+    }
+  };
+  const columnDefaults = columns(handleForceDelete, handleRestore);
 
   const table = useReactTable({
     data: categories,
@@ -108,7 +122,7 @@ const CategoriesSoftDeletedTable = () => {
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
-        />        
+        />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -173,11 +187,9 @@ const CategoriesSoftDeletedTable = () => {
               <TableRow>
                 <TableCell
                   colSpan={columnDefaults.length}
-                  className="h-24 text-center"                  
+                  className="h-24 text-center"
                 >
-                  <div className="w-full">
-                    No results.
-                  </div>
+                  <div className="w-full">No results.</div>
                 </TableCell>
               </TableRow>
             )}
