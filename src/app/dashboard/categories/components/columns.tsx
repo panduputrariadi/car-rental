@@ -4,18 +4,17 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Categories } from "@/types/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Pencil, Trash } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
+  DropdownMenuContent,  
+  DropdownMenuItem,  
 } from "@/components/ui/dropdown-menu";
 
 export const columns = (
-  handleDelete: (id: string) => void
+  handleDelete: (id: string) => void,
+  handleUpdate: (category: Categories) => void
 ): ColumnDef<Categories>[] => [
   {
     id: "select",
@@ -93,16 +92,12 @@ export const columns = (
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(category.name)}
-            >
-              Copy Brand
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleDelete(category.id)}>
-              Delete
+          <DropdownMenuContent align="end">    
+            <DropdownMenuItem onClick={() => handleUpdate(category)} variant="default">
+              <Pencil /> Update Category
+            </DropdownMenuItem>                    
+            <DropdownMenuItem onClick={() => handleDelete(category.id)} variant="destructive">
+              <Trash /> Delete Category
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

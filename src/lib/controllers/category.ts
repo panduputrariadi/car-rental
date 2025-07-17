@@ -1,6 +1,6 @@
 import { getSession } from "next-auth/react";
 import { Backend_URL } from "../Constants";
-import { CreateCategorySchema } from "../schema/category";
+import { CreateCategorySchema, UpdateCategorySchema } from "../schema/category";
 import { toast } from "sonner";
 import axios from "axios";
 
@@ -170,4 +170,30 @@ export async function forceDeleteCategory(id: string) {
     toast.error(error.response?.data?.message || "Network error");
     throw error;
   }
+}
+
+export async function updateCategory(id:string, data: UpdateCategorySchema) {
+  try {
+    const session = (await getSession()) as any;
+    const response = await fetch(`${Backend_URL}/edit-category/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    const resJson = await response.json();
+
+    if (!response.ok) {
+      throw new Error(resJson.message || "Failed to update category");
+    }
+
+    return resJson;
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || "Network error");
+    throw error;
+  }
+  
 }

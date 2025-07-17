@@ -5,4 +5,7 @@ export const createCategorySchema = z.object({
     description: z.coerce.string().optional(),
 });
 
+export const updateCategorySchema = createCategorySchema.partial();
+
 export type CreateCategorySchema = z.infer<typeof createCategorySchema>;
+export type UpdateCategorySchema = z.infer<typeof updateCategorySchema>;

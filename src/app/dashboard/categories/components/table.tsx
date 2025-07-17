@@ -35,9 +35,17 @@ import { columns } from "./columns";
 import CreateCategoryDialgo from "./CreateCategoryDialgo";
 import {
   fetchCategories,
-  softDeleteCategory,
+  softDeleteCategory,  
 } from "@/lib/controllers/category";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import UpdateCategoryDialog from "./UpdateCategoryDialog";
+import { Categories } from "@/types/types";
 
 const CategoriesTable = () => {
   const [page, setPage] = useState(1);
@@ -70,7 +78,17 @@ const CategoriesTable = () => {
       toast.error("Failed to delete category");
     }
   };
-  const columnDefaults = columns(handleDelete);
+  const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<Categories | null>(
+    null
+  );
+
+  const handleUpdate = (category: Categories) => {
+    setSelectedCategory(category);
+    setUpdateDialogOpen(true);
+  };
+
+  const columnDefaults = columns(handleDelete, handleUpdate);
 
   const table = useReactTable({
     data: categories,
@@ -154,6 +172,11 @@ const CategoriesTable = () => {
         </Select>
 
         <CreateCategoryDialgo />
+        <UpdateCategoryDialog
+          open={updateDialogOpen}
+          onOpenChange={setUpdateDialogOpen}
+          category={selectedCategory}
+        />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
