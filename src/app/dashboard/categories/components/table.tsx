@@ -36,7 +36,7 @@ import CreateCategoryDialgo from "./CreateCategoryDialgo";
 import {
   fetchCategories,
   softDeleteCategory,  
-} from "@/lib/controllers/category";
+} from "@/lib/controllers/CategoryController";
 import {
   Select,
   SelectContent,

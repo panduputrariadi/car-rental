@@ -2,7 +2,7 @@ import axios from "axios";
 import { Backend_URL } from "./Constants";
 import { getSession } from "next-auth/react";
 import { toast } from "sonner";
-import { CreateCarInput } from "./schema/vehicle";
+import { CreateCarInput } from "./schema/car";
 import { CreateCategorySchema } from "./schema/category";
 
 export const fetchVehicles = async (page = 1) => {

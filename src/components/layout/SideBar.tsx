@@ -121,7 +121,7 @@ const SideBar = () => {
                       <SidebarMenuSub>
                         <SidebarMenuSubItem>
                           <SidebarMenuButton asChild>
-                            <Link href="/dashboard/vehicles/all" className="">
+                            <Link href="/dashboard/vehicles" className="">
                               <List className="w-3 h-3" />
                               <span>All Vehicles</span>
                             </Link>

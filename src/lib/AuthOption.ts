@@ -4,13 +4,13 @@ import type { JWT } from "next-auth/jwt";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import { NextAuthOptions } from "next-auth";
-import { Backend_URL } from "./Constants";
+// import { Backend_URL } from "./Constants";
 
 async function refreshToken(token: JWT): Promise<JWT> {
   try {
     const res = await fetch(
-      // `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/refresh`,
-      `${Backend_URL}/refresh`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/refresh`,
+      // `${Backend_URL}/refresh`,
       {
         method: "POST",
         headers: {
@@ -18,13 +18,15 @@ async function refreshToken(token: JWT): Promise<JWT> {
           "Content-Type": "application/json",
         },
       }
-    );    
+    );  
+    console.log("ini token", token);  
 
-    if(!res.ok){
-      // throw new Error( "Failed to refresh token" );
-      console.log("❌ Gagal refresh token:", res.status);
-      console.log(token)
-    } 
+    // if (!res.ok) throw new Error("Gagal refresh token");
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("⚠️ Refresh token failed with status:", res.status, errorText);
+      throw new Error("Gagal refresh token");
+    }
 
     const refreshedData = await res.json();
 

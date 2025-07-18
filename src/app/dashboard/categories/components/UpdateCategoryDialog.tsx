@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateCategorySchema, UpdateCategorySchema } from "@/lib/schema/category";
-import { updateCategory } from "@/lib/controllers/category";
+import { updateCategory } from "@/lib/controllers/CategoryController";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useEffect } from "react";

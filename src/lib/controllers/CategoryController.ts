@@ -175,7 +175,7 @@ export async function forceDeleteCategory(id: string) {
 export async function updateCategory(id:string, data: UpdateCategorySchema) {
   try {
     const session = (await getSession()) as any;
-    const response = await fetch(`${Backend_URL}/edit-category/${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/edit-category/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -196,4 +196,25 @@ export async function updateCategory(id:string, data: UpdateCategorySchema) {
     throw error;
   }
   
+}
+
+export async function dropDownCategory() {
+  try {
+    const session = await getSession() as any;
+    const response = await axios.get(`${Backend_URL}/dropdown-category`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+    });
+    // console.log(session)
+
+    const resData = response.data.data;
+
+    return resData;
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || "Network error");
+    throw error;
+  }
 }

@@ -30,24 +30,29 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import TableSkeleton from "./TableSkeleton";
-import { columns } from "./columns";
 import {
-  forceDeleteCategory,
-  getSoftDeletedCategories,
-  restoreSoftDeletedCategory,  
-} from "@/lib/controllers/CategoryController";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { VehiclesColumns } from "./ColumnVehicles";
+import TableSkeleton from "./TableSekeleton";
+import { fetchVehicles } from "@/lib/controllers/VehicleController";
+import CreateVehicleDialog from "./CreateVehicleDialog";
 
-const CategoriesSoftDeletedTable = () => {
+const VehiclesTable = () => {
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFilter[]>([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ["deleted", page],
-    queryFn: () => getSoftDeletedCategories(page),
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["vehicles", page, perPage],
+    queryFn: () => fetchVehicles(page, perPage),
     // keepPreviousData: true,
   });
 
@@ -58,28 +63,27 @@ const CategoriesSoftDeletedTable = () => {
     total_items: data?.meta?.total || 0,
     has_more_pages: data?.meta?.current_page < data?.meta?.last_page,
   };
-  // console.log(JSON.stringify(data.items, null, 2));
-  const handleForceDelete = async (id: string) => {
-    try {
-      await forceDeleteCategory(id);  
-      await refetch();    
-      toast.success("Category force deleted successfully");
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to delete category");
-    }
-  };
-  const handleRestore = async (id: string) => {
-    try {
-      await restoreSoftDeletedCategory(id);
-      await refetch();
-      toast.success("Category restored successfully");      
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to restore category");
-    }
-  };
-  const columnDefaults = columns(handleForceDelete, handleRestore);
+//   const handleDelete = async (id: string) => {
+//     try {
+//       await softDeleteCategory(id);
+//       await refetch();
+//       toast.success("Category deleted successfully");
+//     } catch (error) {
+//       console.log(error);
+//       toast.error("Failed to delete category");
+//     }
+//   };
+//   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
+//   const [selectedCategory, setSelectedCategory] = useState<Categories | null>(
+//     null
+//   );
+
+//   const handleUpdate = (category: Categories) => {
+//     setSelectedCategory(category);
+//     setUpdateDialogOpen(true);
+//   };
+
+  const columnDefaults = VehiclesColumns();
 
   const table = useReactTable({
     data: categories,
@@ -98,12 +102,31 @@ const CategoriesSoftDeletedTable = () => {
       columnFilters,
       columnVisibility,
       rowSelection,
-      pagination: {
-        pageIndex: page - 1,
-        pageSize: 10,
-      },
+      // pagination: {
+      //   pageIndex: page - 1,
+      //   pageSize: 10,
+      // },
     },
   });
+
+  const generatePageNumbers = (current: number, total: number) => {
+    const pages = [];
+
+    if (total <= 5) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+
+    if (current <= 3) {
+      pages.push(1, 2, 3, "...", total);
+    } else if (current >= total - 2) {
+      pages.push(1, "...", total - 2, total - 1, total);
+    } else {
+      pages.push(1, "...", current, "...", total);
+    }
+
+    return pages;
+  };
+
   if (isLoading) {
     return <TableSkeleton />;
   }
@@ -113,7 +136,7 @@ const CategoriesSoftDeletedTable = () => {
     });
   }
   return (
-    <div className="w-full p-4 space-y-4">
+    <div className="max-w-[1100px] p-4 space-y-4 overflow-x-scroll">
       <div className="flex items-center gap-4">
         <Input
           placeholder="Filter categories..."
@@ -123,6 +146,33 @@ const CategoriesSoftDeletedTable = () => {
           }
           className="max-w-sm"
         />
+
+        <Select
+          value={String(perPage)}
+          onValueChange={(value) => {
+            setPerPage(Number(value));
+            setPage(1); // reset ke page 1 saat perPage berubah
+          }}
+        >
+          <SelectTrigger className="w-[120px]">
+            <SelectValue placeholder="Items per page" />
+          </SelectTrigger>
+          <SelectContent>
+            {[5, 10, 20, 50].map((value) => (
+              <SelectItem key={value} value={String(value)}>
+                {value} / page
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* <CreateCategoryDialgo />
+        <UpdateCategoryDialog
+          open={updateDialogOpen}
+          onOpenChange={setUpdateDialogOpen}
+          category={selectedCategory}
+        /> */}
+        <CreateVehicleDialog />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -148,7 +198,7 @@ const CategoriesSoftDeletedTable = () => {
         </DropdownMenu>
       </div>
 
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -214,7 +264,7 @@ const CategoriesSoftDeletedTable = () => {
               Previous
             </Button>
 
-            {Array.from({ length: meta.total_pages }, (_, i) => i + 1).map(
+            {/* {Array.from({ length: meta.total_pages }, (_, i) => i + 1).map(
               (pageNumber) => (
                 <Button
                   key={pageNumber}
@@ -227,6 +277,25 @@ const CategoriesSoftDeletedTable = () => {
                   {pageNumber}
                 </Button>
               )
+            )} */}
+            {generatePageNumbers(meta.current_page, meta.total_pages).map(
+              (pageNum, idx) =>
+                pageNum === "..." ? (
+                  <span key={idx} className="px-2 text-muted-foreground">
+                    ...
+                  </span>
+                ) : (
+                  <Button
+                    key={pageNum}
+                    variant={
+                      pageNum === meta.current_page ? "default" : "outline"
+                    }
+                    size="sm"
+                    onClick={() => setPage(Number(pageNum))}
+                  >
+                    {pageNum}
+                  </Button>
+                )
             )}
 
             <Button
@@ -246,4 +315,4 @@ const CategoriesSoftDeletedTable = () => {
   );
 };
 
-export default CategoriesSoftDeletedTable;
+export default VehiclesTable;
