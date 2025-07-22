@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/select";
 import { VehiclesColumns } from "./ColumnVehicles";
 import TableSkeleton from "./TableSekeleton";
-import { fetchVehicles } from "@/lib/controllers/VehicleController";
+import { fetchVehicles, softDeleteVehicle } from "@/lib/controllers/VehicleController";
 import CreateVehicleDialog from "./CreateVehicleDialog";
 
 const VehiclesTable = () => {
@@ -50,7 +50,7 @@ const VehiclesTable = () => {
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["vehicles", page, perPage],
     queryFn: () => fetchVehicles(page, perPage),
     // keepPreviousData: true,
@@ -63,16 +63,16 @@ const VehiclesTable = () => {
     total_items: data?.meta?.total || 0,
     has_more_pages: data?.meta?.current_page < data?.meta?.last_page,
   };
-//   const handleDelete = async (id: string) => {
-//     try {
-//       await softDeleteCategory(id);
-//       await refetch();
-//       toast.success("Category deleted successfully");
-//     } catch (error) {
-//       console.log(error);
-//       toast.error("Failed to delete category");
-//     }
-//   };
+  const handleDelete = async (id: string) => {
+    try {
+      await softDeleteVehicle(id);
+      await refetch();
+      toast.success("Category deleted successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to delete category");
+    }
+  };
 //   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
 //   const [selectedCategory, setSelectedCategory] = useState<Categories | null>(
 //     null
@@ -83,7 +83,7 @@ const VehiclesTable = () => {
 //     setUpdateDialogOpen(true);
 //   };
 
-  const columnDefaults = VehiclesColumns();
+  const columnDefaults = VehiclesColumns(handleDelete);
 
   const table = useReactTable({
     data: categories,

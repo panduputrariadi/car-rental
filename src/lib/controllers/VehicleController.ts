@@ -59,3 +59,27 @@ export const createVehicle = async (data: CreateVehicleSchema) => {
     throw error;
   }
 };
+
+export const softDeleteVehicle = async (id: string) => {
+  try {
+    const session = await getSession() as any;
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/delete-vehicle/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+    });
+
+    const resJson = await response.json();
+
+    if (!response.ok) {
+      throw new Error(resJson.message || "Failed to delete vehicle");
+    }
+
+    return resJson;
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || "Network error");
+    throw error;
+  }
+};

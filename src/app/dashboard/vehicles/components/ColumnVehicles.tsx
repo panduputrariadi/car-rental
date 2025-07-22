@@ -14,7 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 export const VehiclesColumns = (
-//   handleDelete: (id: string) => void,
+  handleDelete: (id: string) => void,
 //   handleUpdate: (vehicle: Vehicle) => void
 ): ColumnDef<Vehicle>[] => [
   {
@@ -167,7 +167,7 @@ export const VehiclesColumns = (
     enableHiding: false,
     cell: ({ row }) => {
     console.log(row.original);
-    //   const vehicle = row.original;
+      const vehicle = row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -184,7 +184,7 @@ export const VehiclesColumns = (
               <Pencil className="h-4 w-4" /> Edit
             </DropdownMenuItem>
             <DropdownMenuItem
-            //   onClick={() => handleDelete(vehicle.id)}
+              onClick={() => handleDelete(vehicle.id)}
               className="flex items-center gap-2 cursor-pointer text-red-600 focus:text-red-600"
             >
               <Trash className="h-4 w-4" /> Delete
