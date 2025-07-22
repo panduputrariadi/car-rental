@@ -198,20 +198,30 @@ export async function updateCategory(id:string, data: UpdateCategorySchema) {
   
 }
 
-export async function dropDownCategory() {
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function dropDownCategory(search = "") {
   try {
-    const session = await getSession() as any;
-    const response = await axios.get(`${Backend_URL}/dropdown-category`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.access_token}`,
-      },
-    });
-    // console.log(session)
+    // add delay 0.3 second (300ms)
+    await delay(500);
+
+    const session = await getSession() as any;    
+    const normalizedSearch = search.trim().toLowerCase();
+
+    const response = await axios.get(
+      `${Backend_URL}/dropdown-category?search=${(normalizedSearch)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      }
+    );
 
     const resData = response.data.data;
-
     return resData;
   } catch (error: any) {
     toast.error(error.response?.data?.message || "Network error");

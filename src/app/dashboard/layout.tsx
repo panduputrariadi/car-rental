@@ -2,6 +2,7 @@
 // import { authOptions } from "../api/auth/[...nextauth]/route";
 import SideBar from '../../components/layout/SideBar';
 import Navbar from '../../components/layout/Navbar';
+import { PrimeReactProvider } from 'primereact/api';
 
 type Props = {
   children: React.ReactNode;
@@ -15,7 +16,11 @@ const layout = async (props: Props) => {
       <SideBar />
       <div className="w-full">
         <Navbar />
-        <div className="px-4">{props.children}</div>
+        <div className="px-4">
+          <PrimeReactProvider>
+            {props.children}
+          </PrimeReactProvider>
+        </div>
       </div>
     </div>
     

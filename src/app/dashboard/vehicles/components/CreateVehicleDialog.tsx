@@ -32,8 +32,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { dropDownCategory } from "@/lib/controllers/CategoryController";
+import { AutoComplete } from "@/components/ui/autocomplete";
 import { useState } from "react";
-import ReactSelect from "react-select";
 // import { Categories } from "@/types/types";
 
 interface Category {
@@ -45,11 +45,10 @@ interface Category {
 
 export default function CreateVehicleDialog() {
   const queryClient = useQueryClient();
-  const [searchTerm, setSearchTerm] = useState("");
-
+  const [searchValue, setSearchValue] = useState<string>("");
   const { data: categories = [], isLoading } = useQuery<Category[]>({
-    queryKey: ["categories", searchTerm],
-    queryFn: dropDownCategory,
+    queryKey: ["categories", searchValue], // fetch based on input
+    queryFn: () => dropDownCategory(searchValue),
   });
 
   const formVehicle = useForm<CreateVehicleSchema>({
@@ -118,40 +117,23 @@ export default function CreateVehicleDialog() {
             <Textarea {...formVehicle.register("description")} />
           </div>
           <div>
-            <Label>Category ID</Label>
-            {/* <Input {...formVehicle.register("category_id")} /> */}
-            {/* <ReactSelect
-              options={categories.map((category) => ({
+            <Label>Category</Label>
+            <AutoComplete
+              selectedValue={formVehicle.watch("category_id")}
+              onSelectedValueChange={(value) =>
+                formVehicle.setValue("category_id", value)
+              }
+              searchValue={searchValue}
+              onSearchValueChange={setSearchValue}
+              items={categories.map((category) => ({
                 value: category.id,
                 label: category.name,
               }))}
+              // label={formVehicle.watch("category_id")}
               isLoading={isLoading}
-              placeholder="Select or type to search category"
-              onChange={(selected) =>
-                formVehicle.setValue("category_id", selected?.value || "")
-              }
-              onInputChange={(input) => setSearchTerm(input)}
-              isClearable
-            />             */}
-            <Select
-              value={formVehicle.watch("category_id")}
-              onValueChange={(value) =>
-                formVehicle.setValue("category_id", value)
-              }
-              onOpenChange={() => setSearchTerm("")}
-              disabled={isLoading}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              emptyMessage="No categories found"
+              placeholder="Select category"
+            />
           </div>
           <div>
             <Label>Status</Label>
