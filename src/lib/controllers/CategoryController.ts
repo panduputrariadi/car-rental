@@ -8,7 +8,7 @@ export const fetchCategories = async (page = 1, per_page = 5) => {
   const session = (await getSession()) as any;
   try {
     const response = await axios.get(
-      `${Backend_URL}/get-all-categories?page=${page}&per_page=${per_page}`,
+      `${Backend_URL}/categories?action=all&page=${page}&per_page=${per_page}`,
       {
         headers: {
           Authorization: `Bearer ${session?.access_token}`,
@@ -63,7 +63,7 @@ export async function createCategory(data: CreateCategorySchema) {
 export async function softDeleteCategory(id: string) {
   try {
     const session = (await getSession()) as any;
-    const response = await fetch(`${Backend_URL}/soft-delete-category/${id}`, {
+    const response = await fetch(`${Backend_URL}/categories?action=soft-delete&id=${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -88,7 +88,7 @@ export async function getSoftDeletedCategories(page = 1) {
   try {
     const session = (await getSession()) as any;
     const response = await axios.get(
-      `${Backend_URL}/get-soft-deleted-categories?page=${page}`,
+      `${Backend_URL}/categories?action=get-soft-deleted&page=${page}`,
       {
         method: "GET",
         headers: {
@@ -119,7 +119,7 @@ export async function restoreSoftDeletedCategory(id: string) {
   try {
     const session = (await getSession()) as any;
     const response = await fetch(
-      `${Backend_URL}/restore-category/${id}`,
+      `${Backend_URL}/categories?action=restore&id=${id}`,
       {
         method: "GET",
         headers: {
@@ -149,7 +149,7 @@ export async function forceDeleteCategory(id: string) {
   try {
     const session = (await getSession()) as any;
     const response = await fetch(
-      `${Backend_URL}/force-delete-category/${id}`,
+      `${Backend_URL}/categories?action=force-delete&id=${id}`,
       {
         method: "GET",
         headers: {
@@ -175,7 +175,7 @@ export async function forceDeleteCategory(id: string) {
 export async function updateCategory(id:string, data: UpdateCategorySchema) {
   try {
     const session = (await getSession()) as any;
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/edit-category/${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/categories/${id}?action=update`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
