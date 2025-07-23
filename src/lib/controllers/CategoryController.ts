@@ -211,7 +211,7 @@ export async function dropDownCategory(search = "") {
     const normalizedSearch = search.trim().toLowerCase();
 
     const response = await axios.get(
-      `${Backend_URL}/categories?actioin=dropdown&search=${(normalizedSearch)}`,
+      `${Backend_URL}/categories?action=drop-down&search=${(normalizedSearch)}`,
       {
         method: "GET",
         headers: {
