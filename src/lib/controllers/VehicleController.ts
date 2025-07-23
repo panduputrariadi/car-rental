@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { CreateVehicleSchema } from "../schema/VehicleSchema";
 
 export const fetchVehicles = async (page = 1, per_page = 5) => {
-  const session = await getSession() as any;
+  const session = (await getSession()) as any;
   try {
     const response = await axios.get(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/get-all-vehicles?page=${page}&per_page=${per_page}`,
@@ -37,39 +37,63 @@ export const fetchVehicles = async (page = 1, per_page = 5) => {
 
 export const createVehicle = async (data: CreateVehicleSchema) => {
   try {
-    const session = await getSession() as any;
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/create-vehicle`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.access_token}`,
-      },
-      body: JSON.stringify(data),
+    const session = (await getSession()) as any;
+    const formData = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "images" && value instanceof FileList) {
+        Array.from(value).forEach((file) => {
+          formData.append("images[]", file);
+        });
+      } else if (value !== undefined && value !== null) {
+        formData.append(key, value.toString());
+      }
     });
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/create-vehicle`,
+      {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      }
+    );
 
     const resJson = await response.json();
 
     if (!response.ok) {
-      throw new Error(resJson.message || "Failed to create vehicle");
+      const errorMessage =
+        resJson.message ||
+        (resJson.errors
+          ? JSON.stringify(resJson.errors)
+          : "Failed to create vehicle");
+      throw new Error(errorMessage);
     }
 
     return resJson;
   } catch (error: any) {
-    toast.error(error.response?.data?.message || "Network error");
+    console.error("Create vehicle error:", error);
+    toast.error(error.message || "Network error");
     throw error;
   }
 };
 
+
 export const softDeleteVehicle = async (id: string) => {
   try {
-    const session = await getSession() as any;
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/delete-vehicle/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.access_token}`,
-      },
-    });
+    const session = (await getSession()) as any;
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/delete-vehicle/${id}`,
+      {
+        method: "GET",
+        headers: {
+          // "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      }
+    );
 
     const resJson = await response.json();
 

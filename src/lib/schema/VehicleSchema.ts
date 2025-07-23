@@ -33,6 +33,7 @@ export const createVehicleSchema = z.object({
   year: z.number()
     .min(1900, "Year must be after 1900")
     .max(new Date().getFullYear() + 1, "Year cannot be in the future"),
+  images: z.any().optional(),
 });
 
 export const updateVehicleSchema = createVehicleSchema.partial().extend({

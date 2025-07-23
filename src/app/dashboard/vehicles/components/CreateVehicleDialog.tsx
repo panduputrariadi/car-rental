@@ -34,7 +34,6 @@ import {
 import { dropDownCategory } from "@/lib/controllers/CategoryController";
 import { AutoComplete } from "@/components/ui/autocomplete";
 import { useState } from "react";
-// import { Categories } from "@/types/types";
 
 interface Category {
   id: string;
@@ -47,7 +46,7 @@ export default function CreateVehicleDialog() {
   const queryClient = useQueryClient();
   const [searchValue, setSearchValue] = useState<string>("");
   const { data: categories = [], isLoading } = useQuery<Category[]>({
-    queryKey: ["categories", searchValue], // fetch based on input
+    queryKey: ["categories", searchValue],
     queryFn: () => dropDownCategory(searchValue),
   });
 
@@ -70,6 +69,7 @@ export default function CreateVehicleDialog() {
       brand: "",
       type: "",
       year: new Date().getFullYear(),
+      images: undefined,
     },
   });
 
@@ -87,6 +87,7 @@ export default function CreateVehicleDialog() {
   });
 
   const onSubmit = (data: CreateVehicleSchema) => {
+    // console.log(data);
     mutate(data);
   };
 
@@ -129,7 +130,6 @@ export default function CreateVehicleDialog() {
                 value: category.id,
                 label: category.name,
               }))}
-              // label={formVehicle.watch("category_id")}
               isLoading={isLoading}
               emptyMessage="No categories found"
               placeholder="Select category"
@@ -139,7 +139,12 @@ export default function CreateVehicleDialog() {
             <Label>Status</Label>
             <Select
               value={formVehicle.watch("status")}
-              onValueChange={(value) => formVehicle.setValue("status", value)}
+              onValueChange={(value) =>
+                formVehicle.setValue(
+                  "status",
+                  value as (typeof VEHICLE_STATUS)[number]
+                )
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select status" />
@@ -158,7 +163,10 @@ export default function CreateVehicleDialog() {
             <Select
               value={formVehicle.watch("transmission")}
               onValueChange={(value) =>
-                formVehicle.setValue("transmission", value)
+                formVehicle.setValue(
+                  "transmission",
+                  value as (typeof TRANSMISSION_TYPES)[number]
+                )
               }
             >
               <SelectTrigger>
@@ -232,6 +240,15 @@ export default function CreateVehicleDialog() {
             <Input
               type="number"
               {...formVehicle.register("year", { valueAsNumber: true })}
+            />
+          </div>
+          <div className="col-span-2">
+            <Label>Images</Label>
+            <Input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={(e) => formVehicle.setValue("images", e.target.files)}
             />
           </div>
           <DialogFooter className="col-span-2 flex justify-end space-x-2 mt-4">

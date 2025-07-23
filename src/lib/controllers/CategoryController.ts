@@ -205,7 +205,7 @@ function delay(ms: number) {
 export async function dropDownCategory(search = "") {
   try {
     // add delay 0.3 second (300ms)
-    await delay(500);
+    await delay(1500);
 
     const session = await getSession() as any;    
     const normalizedSearch = search.trim().toLowerCase();
