@@ -49,7 +49,7 @@ const UpdateCategoryDialog = ({ open, onOpenChange, category }: Props) => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
       onOpenChange(false);
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.log(error);
       toast.error(error.message || "Failed to update category");
     },

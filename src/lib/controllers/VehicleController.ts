@@ -1,3 +1,4 @@
+import { UpdateVehicleSchema } from './../schema/VehicleSchema';
 // import { createVehicle } from '@/lib/api';
 import axios from "axios";
 import { getSession } from "next-auth/react";
@@ -107,3 +108,28 @@ export const softDeleteVehicle = async (id: string) => {
     throw error;
   }
 };
+
+export async function updateVehicle(id:string, data: UpdateVehicleSchema){
+  try {
+    const session = await getSession() as any;
+    const respone = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/update-data/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    
+    const resJSON = await respone.json();
+
+    if (!resJSON.ok) {
+      throw new Error(resJSON.message || "Failed to update category");
+    }
+
+    return resJSON;
+  }  catch (error: any) {
+    toast.error(error.response?.data?.message || "Network error");
+    throw error;
+  }
+}

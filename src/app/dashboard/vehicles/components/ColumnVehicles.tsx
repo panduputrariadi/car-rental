@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 
 export const VehiclesColumns = (
   handleDelete: (id: string) => void,
-//   handleUpdate: (vehicle: Vehicle) => void
+  handleUpdate: (vehicle: Vehicle) => void
 ): ColumnDef<Vehicle>[] => [
   {
     id: "select",
@@ -178,7 +178,7 @@ export const VehiclesColumns = (
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
-            //   onClick={() => handleUpdate(vehicle)}
+              onClick={() => handleUpdate(vehicle)}
               className="flex items-center gap-2 cursor-pointer"
             >
               <Pencil className="h-4 w-4" /> Edit

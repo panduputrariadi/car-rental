@@ -1,39 +1,57 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
+  DialogClose,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { createVehicle } from "@/lib/controllers/VehicleController";
-import {
-  createVehicleSchema,
-  CreateVehicleSchema,
-  VEHICLE_STATUS,
-  TRANSMISSION_TYPES,
-} from "@/lib/schema/VehicleSchema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { dropDownCategory } from "@/lib/controllers/CategoryController";
+import { toast } from "sonner";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useEffect, useState } from "react";
+import {
+    TRANSMISSION_TYPES,
+  updateVehicleSchema,
+  UpdateVehicleSchema,
+  VEHICLE_STATUS,
+} from "@/lib/schema/VehicleSchema";
 import { AutoComplete } from "@/components/ui/autocomplete";
-import { useState } from "react";
+import { updateVehicle } from "@/lib/controllers/VehicleController";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+type Props = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  vehicle: {
+    id: string;
+    name: string;
+    description?: string ;
+    category_id: string;
+    status: string;
+    transmission: string;
+    plate_number: string;
+    fuel_type: string;
+    color: string;
+    rate_per_day: number;
+    rate_per_hour: number;
+    capacity: number;
+    mileage: number;
+    model: string;
+    brand: string;
+    type: string;
+    year: number;
+  } | null;
+};
 
 interface Category {
   id: string;
@@ -42,16 +60,17 @@ interface Category {
   description: string;
 }
 
-export default function CreateVehicleDialog() {
+const UpdateVehicleDialog = ({ open, onOpenChange, vehicle }: Props) => {
   const queryClient = useQueryClient();
   const [searchValue, setSearchValue] = useState<string>("");
+
   const { data: categories = [], isLoading } = useQuery<Category[]>({
     queryKey: ["categories", searchValue],
     queryFn: () => dropDownCategory(searchValue),
   });
 
-  const formVehicle = useForm<CreateVehicleSchema>({
-    resolver: zodResolver(createVehicleSchema),
+  const formVehicle = useForm<UpdateVehicleSchema>({
+    resolver: zodResolver(updateVehicleSchema),
     defaultValues: {
       name: "",
       description: "",
@@ -68,45 +87,61 @@ export default function CreateVehicleDialog() {
       model: "",
       brand: "",
       type: "",
-      year: new Date().getFullYear(),
-      images: undefined,
+      year: new Date().getFullYear(),      
     },
   });
 
   const { mutate } = useMutation({
-    mutationFn: createVehicle,
+    mutationFn: (data: UpdateVehicleSchema) => {
+      if (!vehicle?.id) return Promise.reject("No Vehicle ID");
+      return updateVehicle(vehicle.id, data);
+    },
     onSuccess: () => {
-      toast.success("Vehicle created successfully");
-      queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-      formVehicle.reset();
+      toast.success("Vehicle updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      onOpenChange(false);
     },
     onError: (error: Error) => {
-      console.log("mutation error: ", error);
-      toast.error(error.message || "Failed to create vehicle");
+      console.log(error);
+      toast.error(error.message || "Failed to update Vehicle");
     },
   });
 
-  const onSubmit = (data: CreateVehicleSchema) => {
-    // console.log(data);
+  useEffect(() => {
+    if (vehicle) {
+      formVehicle.reset({
+        name: vehicle.name,
+        description: vehicle.description,
+        category_id: vehicle.category_id,
+        status: vehicle.status as typeof VEHICLE_STATUS[number],
+        transmission: vehicle.transmission as typeof TRANSMISSION_TYPES[number],
+        plate_number: vehicle.plate_number,
+        fuel_type: vehicle.fuel_type,
+        color: vehicle.color,
+        rate_per_day: vehicle.rate_per_day,
+        rate_per_hour: vehicle.rate_per_hour,
+        capacity: vehicle.capacity,
+        mileage: vehicle.mileage,
+        model: vehicle.model,
+        brand: vehicle.brand,
+        type: vehicle.type,
+        year: vehicle.year,
+      });
+    }
+  }, [vehicle, formVehicle]);
+
+  const onSubmit = (data: UpdateVehicleSchema) => {
     mutate(data);
   };
 
-  const onInvalid = (errors: { [s: string]: unknown } | ArrayLike<unknown>) => {
-    const firstError = Object.values(errors)[0] as { message?: string };
-    toast.error(firstError?.message || "Please fill all required fields");
-  };
-
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Create Vehicle</Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create Vehicle</DialogTitle>
+          <DialogTitle>Update Vehicle</DialogTitle>
         </DialogHeader>
         <form
-          onSubmit={formVehicle.handleSubmit(onSubmit, onInvalid)}
+          onSubmit={formVehicle.handleSubmit(onSubmit)}
           className="grid grid-cols-2 gap-4"
         >
           <div className="col-span-2">
@@ -120,7 +155,7 @@ export default function CreateVehicleDialog() {
           <div>
             <Label>Category</Label>
             <AutoComplete
-              selectedValue={formVehicle.watch("category_id")}
+              selectedValue={formVehicle.watch("category_id")?.toString() ?? ""}
               onSelectedValueChange={(value) =>
                 formVehicle.setValue("category_id", value)
               }
@@ -263,4 +298,6 @@ export default function CreateVehicleDialog() {
       </DialogContent>
     </Dialog>
   );
-}
+};
+
+export default UpdateVehicleDialog;

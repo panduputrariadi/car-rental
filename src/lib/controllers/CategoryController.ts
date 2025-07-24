@@ -38,7 +38,7 @@ export const fetchCategories = async (page = 1, per_page = 5) => {
 export async function createCategory(data: CreateCategorySchema) {
   try {
     const session = (await getSession()) as any;
-    const response = await fetch(`${Backend_URL}/create-category`, {
+    const response = await fetch(`${Backend_URL}/categories?action=create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -41,6 +41,9 @@ import { VehiclesColumns } from "./ColumnVehicles";
 import TableSkeleton from "./TableSekeleton";
 import { fetchVehicles, softDeleteVehicle } from "@/lib/controllers/VehicleController";
 import CreateVehicleDialog from "./CreateVehicleDialog";
+import { Vehicle } from "@/types/types";
+import UpdateVehicleDialog from "./UpdateVehicleDialog";
+
 
 const VehiclesTable = () => {
   const [page, setPage] = useState(1);
@@ -73,17 +76,17 @@ const VehiclesTable = () => {
       toast.error("Failed to delete category");
     }
   };
-//   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
-//   const [selectedCategory, setSelectedCategory] = useState<Categories | null>(
-//     null
-//   );
+  const [updateVehicleDialog, setUpdateVehicleDialog] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(
+    null
+  );
 
-//   const handleUpdate = (category: Categories) => {
-//     setSelectedCategory(category);
-//     setUpdateDialogOpen(true);
-//   };
+  const handleUpdate = (vehicle: Vehicle) => {
+    setUpdateVehicleDialog(true);
+    setSelectedVehicle(vehicle);
+  };
 
-  const columnDefaults = VehiclesColumns(handleDelete);
+  const columnDefaults = VehiclesColumns(handleDelete, handleUpdate);
 
   const table = useReactTable({
     data: categories,
@@ -166,13 +169,12 @@ const VehiclesTable = () => {
           </SelectContent>
         </Select>
 
-        {/* <CreateCategoryDialgo />
-        <UpdateCategoryDialog
-          open={updateDialogOpen}
-          onOpenChange={setUpdateDialogOpen}
-          category={selectedCategory}
-        /> */}
         <CreateVehicleDialog />
+        <UpdateVehicleDialog
+          open={updateVehicleDialog}
+          onOpenChange={setUpdateVehicleDialog}
+          vehicle={selectedVehicle}
+        />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
