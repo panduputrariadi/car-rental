@@ -14,11 +14,11 @@ import {
   FileText,
   List,
   LogOut,
-  MapPin,
-  Plus,
+  MapPin,  
   Settings,
   Tags,
   Trash,
+  Trash2,
   User,
   UserCog,
   Users,
@@ -129,9 +129,9 @@ const SideBar = () => {
                         </SidebarMenuSubItem>
                         <SidebarMenuSubItem>
                           <SidebarMenuButton asChild>
-                            <Link href="/vehicles/add">
-                              <Plus className="w-3 h-3" />
-                              <span>Add New Vehicle</span>
+                            <Link href="/dashboard/vehicles/deleted">
+                              <Trash2 className="w-3 h-3" />
+                              <span>Deleted Vehicle</span>
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuSubItem>
