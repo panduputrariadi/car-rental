@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/select";
 import { dropDownCategory } from "@/lib/controllers/CategoryController";
 import { AutoComplete } from "@/components/ui/autocomplete";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Category {
   id: string;
@@ -42,12 +42,37 @@ interface Category {
   description: string;
 }
 
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+  const handler = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    // Clear previous timeout
+    if (handler.current) {
+      clearTimeout(handler.current);
+    }
+    
+    handler.current = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    
+    return () => {
+      if (handler.current) {
+        clearTimeout(handler.current);
+      }
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
 export default function CreateVehicleDialog() {
   const queryClient = useQueryClient();
   const [searchValue, setSearchValue] = useState<string>("");
+  const debouncedSearchValue = useDebounce<string>(searchValue, 300);
   const { data: categories = [], isLoading } = useQuery<Category[]>({
-    queryKey: ["categories", searchValue],
-    queryFn: () => dropDownCategory(searchValue),
+    queryKey: ["categories", debouncedSearchValue],
+    queryFn: () => dropDownCategory(debouncedSearchValue),
   });
 
   const formVehicle = useForm<CreateVehicleSchema>({

@@ -6,10 +6,10 @@ import { toast } from "sonner";
 import { CreateVehicleSchema } from "../schema/VehicleSchema";
 
 export const fetchVehicles = async (page = 1, per_page = 5) => {
-  const session = (await getSession()) as any;
+  const session = await getSession() as any;
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/get-all-vehicles?page=${page}&per_page=${per_page}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/vehicles?action=all&page=${page}&per_page=${per_page}`,
       {
         headers: {
           Authorization: `Bearer ${session?.access_token}`,
@@ -38,7 +38,7 @@ export const fetchVehicles = async (page = 1, per_page = 5) => {
 
 export const createVehicle = async (data: CreateVehicleSchema) => {
   try {
-    const session = (await getSession()) as any;
+    const session = await getSession() as any;
     const formData = new FormData();
 
     Object.entries(data).forEach(([key, value]) => {
@@ -52,7 +52,7 @@ export const createVehicle = async (data: CreateVehicleSchema) => {
     });
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/create-vehicle`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/vehicles?action=create`,
       {
         method: "POST",
         body: formData,
@@ -112,7 +112,7 @@ export const softDeleteVehicle = async (id: string) => {
 export async function updateVehicle(id:string, data: UpdateVehicleSchema){
   try {
     const session = await getSession() as any;
-    const respone = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/update-data/${id}`, {
+    const respone = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/vehicles/${id}?action=update`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -138,7 +138,7 @@ export async function getSoftDeletedVehicles(page = 1, per_page = 5) {
   const session = await getSession() as any;
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/get-soft-delete-vehicles?page=${page}&per_page=${per_page}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/vehicles?action=soft-delete&page=${page}&per_page=${per_page}`,
       {
         headers: {
           Authorization: `Bearer ${session?.access_token}`,
@@ -168,7 +168,7 @@ export async function getSoftDeletedVehicles(page = 1, per_page = 5) {
 export async function restoreVehicle(id:string){
   try {
     const session = (await getSession()) as any;
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/restore-vehicle/${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/vehicles?action=restore&id=${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -189,7 +189,7 @@ export async function restoreVehicle(id:string){
 export async function forceDeleteVehicle(id:string){
   try {
     const session = await getSession() as any;
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/force-delete-vehicle/${id}`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/vehicles?action=force-delete&id=${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

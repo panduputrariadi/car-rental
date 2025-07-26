@@ -23,6 +23,7 @@ import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { registerSchema } from "@/lib/schema/auth";
+import axios from "axios";
 
 type UserAuthFormProps = HTMLAttributes<HTMLFormElement>;
 
@@ -75,21 +76,34 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   // }
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
+
     const res = await signIn("credentials", {
       email: data.email,
       password: data.password,
       redirect: false,
     });
 
-    if (res?.ok) {
-      toast.success("Login berhasil!", {
-        closeButton: true,
-      });
-      router.push("/dashboard");
-    } else {
+    if (res?.error) {
       toast.error("Login gagal. Email atau password salah.", {
         closeButton: true,
       });
+      setIsLoading(false);
+      return;
+    }
+
+    // Get session to know the user role
+    const sessionRes = await fetch("/api/auth/session");
+    const session = await sessionRes.json();
+
+    if (session?.user?.role === "admin") {
+      toast.success("Login berhasil sebagai Admin!", { closeButton: true });
+      router.push("/dashboard");
+    } else if (session?.user?.role === "customer") {
+      toast.success("Login berhasil sebagai Customer!", { closeButton: true });
+      router.push("/rental-vehicle");
+    } else {
+      toast.success("Login berhasil!", { closeButton: true });
+      router.push("/");
     }
 
     setIsLoading(false);
@@ -104,21 +118,21 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data),
-        }        
+        }
       );
 
       if (response.ok) {
         toast.success("Registrasi berhasil!", {
           closeButton: true,
         });
-        // router.push("/login");        
+        // router.push("/login");
         setActiveTab("account");
         registerForm.reset();
         setIsLoading(false);
       } else {
         setActiveTab("register");
-        // const errorData = await response.json();        
-        toast.error('Email atau password sudah digunakan', {
+        // const errorData = await response.json();
+        toast.error("Email atau password sudah digunakan", {
           closeButton: true,
         });
         setIsLoading(false);
@@ -145,7 +159,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               onSubmit={form.handleSubmit(onSubmit)}
               className={cn("grid gap-3", className)}
               {...props}
-            >              
+            >
               <FormField
                 control={form.control}
                 name="email"
