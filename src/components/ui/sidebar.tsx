@@ -303,7 +303,7 @@ function SidebarTrigger({
       onClick={handleClick}
       {...props}
     >
-      {isSidebarOpen ? <ChevronsRight /> : <ChevronsLeft />}
+      {isSidebarOpen ? <ChevronsRight className="ml-3" /> : <ChevronsLeft className="ml-3"/>}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )
