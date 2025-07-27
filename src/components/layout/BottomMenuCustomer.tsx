@@ -26,7 +26,7 @@ const menuItems = [
 export default function BottomMenuCustomer() {
   return (
     <TooltipProvider>
-      <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white shadow-lg rounded-full px-6 py-3 flex justify-around items-center gap-4 w-[90%] max-w-md z-50">
+      <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white shadow-lg rounded-full px-6 py-3 flex justify-around items-center gap-4 max-w-[90%]  z-50 dark:bg-gray-950 dark:outline-1">
         {menuItems.map(({ href, icon: Icon, label }) => (
           <Tooltip key={href}>
             <TooltipTrigger asChild>
@@ -34,7 +34,7 @@ export default function BottomMenuCustomer() {
                 href={href}
                 className="flex flex-col items-center text-gray-600 hover:text-primary transition"
               >
-                <Icon className="w-6 h-6" />
+                <Icon className="w-6 h-6 dark:text-white"/>
               </Link>
             </TooltipTrigger>
             <TooltipContent side="top">{label}</TooltipContent>

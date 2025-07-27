@@ -206,3 +206,43 @@ export async function forceDeleteVehicle(id:string){
     throw error;
   }
 }
+
+export async function fetchAllBrands() {
+  try {
+    const session = await getSession() as any;
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/vehicles?action=fetch-brand`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      }
+    );
+    return response.data.data;
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || "Network error");
+    throw error;
+  }
+}
+
+export async function fetchAllModels() {
+  try {
+    const session = await getSession() as any;
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/vehicles?action=fetch-model`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      }
+    );
+    return response.data.data;
+  } catch (error: any) {
+    toast.error(error.response?.data?.message || "Network error");
+    throw error;
+  }
+}
