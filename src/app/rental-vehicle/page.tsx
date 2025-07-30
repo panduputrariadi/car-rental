@@ -16,7 +16,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { fetchAllBrands, fetchAllModels } from "@/lib/controllers/VehicleController";
+import { fetchAllBrands } from "@/lib/controllers/BrandController";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "@/hooks/redux";
+import { setBrand } from "@/store/BrandSlice";
 
 interface Category {
   id: string;
@@ -26,11 +29,8 @@ interface Category {
 }
 
 interface Brand {
-  brand: string;
-}
-
-interface Model {
-  model: string;
+  id: string;
+  brand_name: string;
 }
 
 const RentalVehiclePage = () => {
@@ -43,15 +43,16 @@ const RentalVehiclePage = () => {
     queryFn: () => fetchAllCategories(),
   });
 
-  const { data: brands = [] } = useQuery<Brand[]>({
-    queryKey: ["fetch-all-brands"],
+  const { data: brands = [], isLoading: isLoadingBrand } = useQuery<Brand[]>({
+    queryKey: ["brands"],
     queryFn: () => fetchAllBrands(),
-  });
+  });  
 
-  const { data: models = [] } = useQuery<Model[]>({
-    queryKey: ["fetch-all-models"],
-    queryFn: () => fetchAllModels(),
-  });
+  const dispatch = useDispatch();
+  const { selectedBrands } = useAppSelector((state) => state.reducer);  
+  const handleSelectedBrand = (brandId: string) => {
+    dispatch(setBrand(brandId));
+  }
   return (
     <div className="grid grid-cols-1 gap-4 pt-4 lg:grid-cols-3 2xl:grid-cols-4">
       <div className="col-span-1">
@@ -126,12 +127,12 @@ const RentalVehiclePage = () => {
                 <AccordionItem value="item-1">
                   <AccordionTrigger>Car Model</AccordionTrigger>
                   <AccordionContent className="flex flex-col gap-4 text-balance">
-                    {models.map((model, index) => (
+                    {/* {models.map((model, index) => (
                       <div key={index} className="flex items-center space-x-2">
                         <Checkbox id={model.model} />
                         <Label htmlFor={model.model}>{model.model}</Label>
                       </div>
-                    ))}
+                    ))} */}
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
@@ -148,14 +149,22 @@ const RentalVehiclePage = () => {
                 // defaultValue="item-1"
               >
                 <AccordionItem value="item-1">
-                  <AccordionTrigger>Car Brand</AccordionTrigger>
-                  <AccordionContent className="flex flex-col gap-4 text-balance">
-                    {brands.map((brand, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <Checkbox id={brand.brand} />
-                        <Label htmlFor={brand.brand}>{brand.brand}</Label>
-                      </div>
-                    ))}
+                  <AccordionTrigger>Car Brand {selectedBrands.length > 0 && `(${selectedBrands.length})`}</AccordionTrigger>
+                  <AccordionContent className="flex flex-col gap-4 text-balance">                    
+                    {
+                      isLoadingBrand ? (
+                        <CategorySekeleton />
+                      ) : (
+                        brands.map((brand, index) => (
+                          <div key={index} className="flex items-center space-x-2">
+                            <Checkbox id={brand.id}
+                            checked={selectedBrands.includes(brand.id as string)}
+                            onCheckedChange={() => handleSelectedBrand(brand.id)} />
+                            <Label htmlFor={brand.brand_name}>{brand.brand_name}</Label>
+                          </div>
+                        ))
+                      )
+                    }
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>

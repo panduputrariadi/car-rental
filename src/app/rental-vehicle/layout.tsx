@@ -5,6 +5,8 @@ import BottomMenuCustomer from "@/components/layout/BottomMenuCustomer";
 import NavbarCustomer from "@/components/layout/NavbarCustomer";
 import SideBarCustomer from "@/components/layout/SideBarCustomer";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Provider } from "react-redux";
+import { store } from "@/store";
 
 type Props = {
   children: React.ReactNode;
@@ -26,16 +28,18 @@ const Layout = ({ children }: Props) => {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="flex w-full">
-        {!isSmallDevice && <SideBarCustomer />}
-        {isSmallDevice && <BottomMenuCustomer />}
-        <div className="w-full">
-          <NavbarCustomer />
-          <div className="px-4">{children}</div>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <div className="flex w-full">
+          {!isSmallDevice && <SideBarCustomer />}
+          {isSmallDevice && <BottomMenuCustomer />}
+          <div className="w-full">
+            <NavbarCustomer />
+            <div className="px-4">{children}</div>
+          </div>
         </div>
-      </div>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </Provider>
   );
 };
 
