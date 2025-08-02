@@ -9,12 +9,6 @@ import { Switch } from "@/components/ui/switch";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAllCategories } from "@/lib/controllers/CategoryController";
 import { CategorySekeleton } from "./components/CategorySekeleton";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { fetchAllBrands } from "@/lib/controllers/BrandController";
 import { useDispatch, useSelector } from "react-redux";
 import { setBrand } from "@/store/BrandSlice";
@@ -164,19 +158,19 @@ const RentalVehiclePage = () => {
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion> */}
-                Car Brand
+                Car Brand {selectedBrands.length > 0 && `(${selectedBrands.length})`}
               </Label>
               <div className="grid grid-cols-2 gap-2 text-sm">
-                {isLoading ? (
+                {isLoadingBrand ? (
                   <CategorySekeleton />
                 ) : (
                   brands.map((brand, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <Checkbox
                         id={brand.id}
-                        checked={selectedCategories.includes(brand.id)}
+                        checked={selectedBrands.includes(brand.id)}
                         onCheckedChange={(checked) =>
-                          handleSelectedCategory(brand.id)(checked)
+                          handleSelectedBrand(brand.id, checked as boolean)
                         }
                       />
                       <Label htmlFor={brand.id}>{brand.brand_name}</Label>

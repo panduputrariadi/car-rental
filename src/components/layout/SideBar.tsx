@@ -2,6 +2,7 @@
 import {
   Award,
   BarChart2,
+  Book,
   Building2,
   Calendar,
   CalendarCheck,
@@ -68,7 +69,7 @@ const SideBar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link href="/" className="flex items-center gap-2">
+              <Link href="/dashboard" className="flex items-center gap-2">
                 <Image
                   src="/vite.svg"
                   width={24}
@@ -84,22 +85,6 @@ const SideBar = () => {
 
       {/* Main Navigation */}
       <SidebarContent>
-        {/* Dashboard Section */}
-        <SidebarGroup>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <Link href="/dashboard">
-                  {/* <LayoutDashboard className="w-4 h-4" /> */}
-                  <span>Dashboard</span>
-                  <Badge variant="secondary" className="ml-auto">
-                    New
-                  </Badge>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
 
         {/* Fleet Management Section */}
         <SidebarGroup>
@@ -150,34 +135,44 @@ const SideBar = () => {
                       </CollapsibleTrigger>
                     </SidebarGroupLabel>
                     <CollapsibleContent>
-                      {/* <SidebarGroupContent /> */}
-                      {/* <SidebarMenu>
-                        <SidebarMenuItem>
-                          <SidebarMenuButton asChild>
-                            <Link
-                              href="dashboard/vehicles/all"
-                              className="pl-6"
-                            >
-                              <List className="w-3 h-3" />
-                              <span>All Categories</span>
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                          <SidebarMenuButton asChild>
-                            <Link href="/vehicles/add" className="pl-6">
-                              <Trash className="w-3 h-3" />
-                              <span>Deleted Categories</span>
-                            </Link>
-                          </SidebarMenuButton>
-                        </SidebarMenuItem>
-                      </SidebarMenu> */}
                       <SidebarMenuSub>
                         <SidebarMenuSubItem>
                           <SidebarMenuButton asChild>
                             <Link href="/dashboard/categories">
                               <List className="w-3 h-3" />
                               <span>All Categories</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuSubItem>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuButton asChild>
+                            <Link href="/dashboard/categories/deleted">
+                              <Trash className="w-3 h-3" />
+                              <span>Deleted Categories</span>
+                            </Link>
+                          </SidebarMenuButton>
+                        </SidebarMenuSubItem>
+                      </SidebarMenuSub>
+                    </CollapsibleContent>
+                  </SidebarGroup>
+                </Collapsible>
+
+                <Collapsible defaultOpen className="group/collapsible">
+                  <SidebarGroup>
+                    <SidebarGroupLabel asChild>
+                      <CollapsibleTrigger>
+                        <Book className="w-4 h-4" />
+                        Brands
+                        <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                      </CollapsibleTrigger>
+                    </SidebarGroupLabel>
+                    <CollapsibleContent>
+                      <SidebarMenuSub>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuButton asChild>
+                            <Link href="/dashboard/brands">
+                              <List className="w-3 h-3" />
+                              <span>All Brands</span>
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuSubItem>

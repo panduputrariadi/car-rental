@@ -66,3 +66,10 @@ export type VehicleImage = {
   created_at?: string;
   updated_at?: string;
 };
+
+export type Brand = {
+  id: string;
+  brand_name: string;
+  description: string;
+  slug: string;
+};
