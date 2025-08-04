@@ -1,5 +1,5 @@
 "use client"
-import { getAllBrands } from "@/lib/controllers/BrandController";
+import { getAllBrands, softDeleteBrand } from "@/lib/controllers/BrandController";
 import { useQuery } from "@tanstack/react-query";
 import { ColumnFilter, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import React, { useState } from "react";
@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
+import CreateBrandDialog from "./CreateBrandDialog";
 
 const BrandTable = () => {
   const [page, setPage] = useState(1);
@@ -33,7 +34,18 @@ const BrandTable = () => {
     has_more_pages: data?.meta?.current_page < data?.meta?.last_page,
   };
 
-  const columnBrands = BrandColumn();
+  const handleBrandDelete = async (id: string) => {
+    try {
+      await softDeleteBrand(id);
+      await refetch();
+      toast.success("Brand deleted successfully");
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to delete brand");
+    }
+  };
+
+  const columnBrands = BrandColumn(handleBrandDelete);
 
   const brandTable = useReactTable({
     data: brands,
@@ -94,6 +106,8 @@ const BrandTable = () => {
           }
           className="max-w-sm"
         />
+
+        <CreateBrandDialog />
 
         <Select
           value={String(perPage)}

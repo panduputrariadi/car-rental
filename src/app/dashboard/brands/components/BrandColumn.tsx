@@ -12,8 +12,9 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 
-export const BrandColumn = (): //   handleDelete: (id: string) => void,
-//   handleUpdate: (category: Categories) => void
+export const BrandColumn = (
+  handleDelete: (id: string) => void
+): 
 ColumnDef<Brand>[] => [
   {
     id: "select",
@@ -82,7 +83,7 @@ ColumnDef<Brand>[] => [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-    //   const category = row.original;
+      const brand = row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -96,13 +97,13 @@ ColumnDef<Brand>[] => [
             //   onClick={() => handleUpdate(category)}
               variant="default"
             >
-              <Pencil /> Update Category
+              <Pencil /> Update Brand
             </DropdownMenuItem>
             <DropdownMenuItem
-            //   onClick={() => handleDelete(category.id)}
+              onClick={() => handleDelete(brand.id)}
               variant="destructive"
             >
-              <Trash /> Delete Category
+              <Trash /> Delete Brand
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
